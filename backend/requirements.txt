@@ -1,0 +1,16 @@
+# App
+Django==3.1.4
+djangorestframework>=3.9.0
+
+# Tasks
+celery==4.4.1
+flower==0.9.3
+redis==3.4.1
+
+
+# DB
+psycopg2-binary>=2.8
+
+
+pytest==5.4.1
+pytest-django==3.8.0
