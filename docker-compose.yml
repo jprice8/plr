@@ -32,7 +32,7 @@ services:
     environment: 
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=supersecretpassword 
-      - POSTGRES_DB=app
+      - POSTGRES_DB=plr
     ports:
       - 5433:5432
 
