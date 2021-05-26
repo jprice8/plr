@@ -30,7 +30,7 @@ class UserList(generics.ListAPIView):
     serializer_class = UserSerializer
 
 
-class GetUser(generics.RetrieveAPIView):
+class GetUser(generics.RetrieveUpdateAPIView):
     """
     Return the user's object
     """
