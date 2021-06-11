@@ -13,6 +13,7 @@ from reset.models import Par, Submission, Itemreset
 
 PARS_URL = reverse('reset:pars')
 SUBMISSIONS_URL = reverse('reset:submissions')
+ITEMRESETS_URL = reverse('reset:itemreset')
 
 
 def create_user(**params):
@@ -48,8 +49,20 @@ class DBEmptyTest(TestCase):
         today = datetime.date(2021, 5, 25)
         payload = {
             'facility_code': '872',
-            'current_par_qty': 5,
+            'location_id': '84',
+            'location_name': 'SURGERY PAR/STOREROOM',
+            'description': 'SEALER, VESSEL ENDOWRIST ONE 8MM DAVINCI',
+            'imms': '123456',
+            'uom_conv_factor': 1,
+            'uom': 'EA',
+            'wt_avg_cost': 595,
+            'unit_cost': 595,
+            'dept_id': '7021',
+            'current_par_qty': 4,
             'recommended_par_qty': 1,
+            'qty_delta': 3,
+            'ext_delta': 1190,
+            'expense_account_no': '4110',
             'review_date': today
         }
 
@@ -83,6 +96,15 @@ class DBEmptyTest(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
+    #### Test ItemReset List ####
+    def test_get_all_itemresets_success(self):
+        """
+        Test GET all itemresets
+        """
+        res = self.client.get(ITEMRESETS_URL)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
 
 class DBFullTest(TestCase):
     """
@@ -98,14 +120,26 @@ class DBFullTest(TestCase):
 
         # Create a par
         today = datetime.date(2021, 5, 25)
-        payload_par = {
+        payload = {
             'facility_code': '872',
-            'current_par_qty': 5,
+            'location_id': '84',
+            'location_name': 'SURGERY PAR/STOREROOM',
+            'description': 'SEALER, VESSEL ENDOWRIST ONE 8MM DAVINCI',
+            'imms': '123456',
+            'uom_conv_factor': 1,
+            'uom': 'EA',
+            'wt_avg_cost': 595,
+            'unit_cost': 595,
+            'dept_id': '7021',
+            'current_par_qty': 4,
             'recommended_par_qty': 1,
+            'qty_delta': 3,
+            'ext_delta': 1190,
+            'expense_account_no': '4110',
             'review_date': today
         }
 
-        self.client.post(PARS_URL, payload_par)
+        self.client.post(PARS_URL, payload)
 
         # create a submission
         payload_submission = {
@@ -135,8 +169,20 @@ class DBFullTest(TestCase):
         today = datetime.date(2021, 5, 25)
         payload = {
             'facility_code': '872',
+            'location_id': '84',
+            'location_name': 'SURGERY PAR/STOREROOM',
+            'description': 'SEALER, VESSEL ENDOWRIST ONE 8MM DAVINCI',
+            'imms': '123456',
+            'uom_conv_factor': 1,
+            'uom': 'EA',
+            'wt_avg_cost': 595,
+            'unit_cost': 595,
+            'dept_id': '7021',
             'current_par_qty': 4,
             'recommended_par_qty': 1,
+            'qty_delta': 3,
+            'ext_delta': 1190,
+            'expense_account_no': '4110',
             'review_date': today
         }
         par = Par.objects.all()[0]
@@ -200,3 +246,26 @@ class DBFullTest(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
 
+
+    # #### Itemreset Tests ####
+    # def test_create_itemreset_successful(self):
+    #     """
+    #     Test POST for creating itemreset
+    #     """
+    #     today = datetime.date(2021, 6, 10)
+    #     pars = Par.objects.all()
+    #     submissions = Submission.objects.all()
+    #     payload = {
+    #         'par': pars[0],
+    #         'submission': submissions[0],
+    #         'last_updated': today,
+    #         'reset_level': 2
+    #     }
+    #     res = self.client.post(ITEMRESETS_URL, payload)
+    #     self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+    # def test_get_itemreset_successful(self):
+    #     """
+    #     Test GET unique itemreset 
+    #     """
+    #     itemreset = Itemreset.objects.all

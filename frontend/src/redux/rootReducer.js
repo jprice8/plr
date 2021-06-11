@@ -1,10 +1,11 @@
-import { combineReducers } from 'redux'
+import { combineReducers } from "redux";
 
-import authReducer from './auth'
+import authReducer from "./auth";
+import parsReducer from "./pars";
 
 const rootReducer = combineReducers({
-  auth: authReducer
-  // other reducers go here
-})
+  auth: authReducer,
+  pars: parsReducer,
+});
 
-export default rootReducer
+export default rootReducer;

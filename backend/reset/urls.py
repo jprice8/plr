@@ -18,5 +18,10 @@ urlpatterns = [
     path('submission/<int:pk>/', views.submission_detail, name='submission'),
 
     # Itemreset list
-    # path('itemreset/', views.Itemreset.as_view(), name='itemreset'),
+    path('itemreset/', views.ItemresetList.as_view(), name='itemreset'),
+    # Individual itemreset
+    path('itemreset/<int:pk>', views.itemresest_detail, name='itemreset'),
+
+    # Weekly Submission List
+    path('weekly-submissions/', views.weekly_submission_list, name='weekly-submissions')
 ]

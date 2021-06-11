@@ -11,3 +11,9 @@ export { default as ProfilePage } from "./ProfilePage/ProfilePage";
 export { default as ProtectedRoute } from "./ProtectedRoute/ProtectedRoute";
 export { default as RegistrationForm } from "./RegistrationForm/RegistrationForm";
 export { default as RegistrationPage } from "./RegistrationPage/RegistrationPage";
+export { default as Dashboard } from "./Dashboard/Dashboard";
+
+// Par Components
+export { default as ParsHome } from "./ParsHome/ParsHome";
+export { default as ParsPage } from "./ParsPage/ParsPage";
+export { default as ParView } from "./ParView/ParView";
