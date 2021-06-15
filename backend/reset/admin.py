@@ -1,8 +1,7 @@
 from django.contrib import admin
-from .models import Par, Submission, Itemreset
+from .models import Par, Itemreset
 
 
 admin.site.register(Par)
-admin.site.register(Submission)
 admin.site.register(Itemreset)
 

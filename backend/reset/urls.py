@@ -11,12 +11,6 @@ urlpatterns = [
     # Individual pars
     path('par/<int:pk>/', views.par_detail, name='par'),
 
-
-    # Submissions list
-    path('submission/', views.SubmissionList.as_view(), name='submissions'),
-    # Individual submissions
-    path('submission/<int:pk>/', views.submission_detail, name='submission'),
-
     # Itemreset list
     path('itemreset/', views.ItemresetList.as_view(), name='itemreset'),
     # Individual itemreset

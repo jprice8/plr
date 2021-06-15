@@ -1,16 +1,16 @@
 import datetime
-import enum
+# import enum
 
-from http.client import ResponseNotReady
-from django.contrib.auth import get_user_model
+# from http.client import ResponseNotReady
+# from django.contrib.auth import get_user_model
+from django.utils import timezone
 from rest_framework import generics, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import ItemresetSerializer, ParSerializer, SubmissionSerializer
-from .models import Itemreset, Par, Submission
-
+from .serializers import ItemresetSerializer, ParSerializer 
+from .models import Itemreset, Par
 
 
 #### Par Views ####
@@ -57,50 +57,6 @@ def par_detail(request, pk):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-#### Submission Views ####
-class SubmissionList(APIView):
-    """
-    Return all submissions in the system, or create a new one
-    """
-    def get(self, request, format=None):
-        submission = Submission.objects.all()
-        serializer = SubmissionSerializer(submission, many=True)
-        return Response(serializer.data)
-
-    def post(self, request, format=None):
-        serializer = SubmissionSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['GET', 'PUT', 'DELETE'])
-def submission_detail(request, pk):
-    """
-    Retrieve, update or delete a submission
-    """
-    try:
-        submission = Submission.objects.get(pk=pk)
-    except Submission.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'GET':
-        serializer = SubmissionSerializer(submission)
-        return Response(serializer.data)
-
-    elif request.method == 'PUT':
-        serializer = SubmissionSerializer(submission, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    elif request.method == 'DELETE':
-        submission.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
 ### Itemreset Views ####
 class ItemresetList(APIView):
     """
@@ -112,9 +68,14 @@ class ItemresetList(APIView):
         return Response(serializer.data)
 
     def post(self, request, format=None):
+        today = timezone.now()
+        current_week = today.strftime('%W')
+        current_month = today.strftime('%m')
+        current_year = today.strftime('%Y')
+
         serializer = ItemresetSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(week=current_week, month=current_month, year=current_year)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -151,7 +112,8 @@ def weekly_submission_list(request):
     """
     Retrieve list of weeks and whether submissions were submitted for them
     """
-    today = datetime.datetime.today()
+    # today = datetime.datetime.today()
+    today = timezone.now()
     # current week number e.g. 17 for last week of April
     current_week_number = int(today.strftime('%W')) 
 
@@ -161,11 +123,14 @@ def weekly_submission_list(request):
         weeks.append(x)
 
     # find out which weeks have submitted forms
-    weekly_forms = Submission.objects.all()
+    resets = Itemreset.objects.all()
 
     weeks_submitted = []
-    for i in weekly_forms:
+    for i in resets:
         weeks_submitted.append(i.week)
+    
+    # Get unique weeks
+    weeks_submitted = list(set(weeks_submitted))
 
     # loop through weeks and if there is a matching submission, set status
     submission_status = []

@@ -38,23 +38,13 @@ class Par(models.Model):
 
     def __str__(self):
         return f'Par # {self.id}, cur: {self.current_par_qty}, rec: {self.recommended_par_qty}'
+					
 
-
-class Submission(models.Model):
-    timestamp = models.DateTimeField(auto_now_add=True)
-    last_updated = models.DateField()
-    itemresets = models.ManyToManyField(Par, through='Itemreset')
+class Itemreset(models.Model):
+    par = models.ForeignKey(Par, on_delete=models.CASCADE)
+    last_updated = models.DateField(auto_now=True)
+    reset_level = models.IntegerField(null=False)
 
     week = models.IntegerField(null=False)
     month = models.IntegerField(null=False)
     year = models.IntegerField(null=False)
-
-    def __str__(self):
-        return f'Submission # {self.id}, Week: {self.week}, Month: {self.month}, Year: {self.year}'
-
-
-class Itemreset(models.Model):
-    par = models.ForeignKey(Par, on_delete=models.CASCADE)
-    submission = models.ForeignKey(Submission, on_delete=models.CASCADE)
-    last_updated = models.DateField()
-    reset_level = models.IntegerField(null=False)

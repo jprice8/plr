@@ -8,11 +8,10 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status 
 
-from reset.models import Par, Submission, Itemreset
+from reset.models import Par, Itemreset
 
 
 PARS_URL = reverse('reset:pars')
-SUBMISSIONS_URL = reverse('reset:submissions')
 ITEMRESETS_URL = reverse('reset:itemreset')
 
 
@@ -70,32 +69,6 @@ class DBEmptyTest(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
-
-    #### Test Submission List ####
-    def test_get_all_submissions_success(self):
-        """
-        Test GET for all submissions
-        """
-        res = self.client.get(SUBMISSIONS_URL)
-
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-
-    def test_create_submission_success(self):
-        """
-        Test POST for creating submission
-        """
-        today = datetime.date(2021, 5, 25)
-        payload = {
-            'last_updated': today,
-            'week': 21,
-            'month': 5,
-            'year': 2021
-        }
-
-        res = self.client.post(SUBMISSIONS_URL, payload)
-
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-
     #### Test ItemReset List ####
     def test_get_all_itemresets_success(self):
         """
@@ -141,16 +114,6 @@ class DBFullTest(TestCase):
 
         self.client.post(PARS_URL, payload)
 
-        # create a submission
-        payload_submission = {
-            'last_updated': today,
-            'week': 20,
-            'month': 5,
-            'year': 2021
-        }
-
-        self.client.post(SUBMISSIONS_URL, payload_submission)
-
     
     #### Par Tests ####
     def test_get_all_pars(self):
@@ -192,7 +155,7 @@ class DBFullTest(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
-    def test_delete_pas_successful(self):
+    def test_delete_pars_successful(self):
         """
         Test DELETE to remove par from db
         """
@@ -202,50 +165,6 @@ class DBFullTest(TestCase):
         res = self.client.delete(PAR_URL)
 
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
-
-
-    #### Submission Tests ####
-    def test_get_unique_submissions(self):
-        """
-        Test to GET a unique submission
-        """
-        submission = Submission.objects.all()[0]
-        SUBMISSION_URL = reverse('reset:submission', kwargs={'pk': submission.id})
-        
-        res = self.client.get(SUBMISSION_URL)
-
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 4) # four keys showing for one instance
-
-    def test_update_submission_successful(self):
-        """
-        Test PUT will update the submission instance
-        """
-        today = datetime.date(2021, 5, 25)
-        payload = {
-            'last_updated': today,
-            'week': 20,
-            'month': 6,
-            'year': 2021
-        }
-        submission = Submission.objects.all()[0]
-        SUBMISSION_URL = reverse('reset:submission', kwargs={'pk': submission.id})
-
-        res = self.client.put(SUBMISSION_URL, payload)
-
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-
-    def test_delete_submission_successful(self):
-        """
-        Test DELETE a submission
-        """
-        submission = Submission.objects.all()[0]
-        SUBMISSION_URL = reverse('reset:submission', kwargs={'pk': submission.id})
-        
-        res = self.client.delete(SUBMISSION_URL)
-
-        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
-
 
     # #### Itemreset Tests ####
     # def test_create_itemreset_successful(self):
