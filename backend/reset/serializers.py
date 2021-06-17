@@ -18,4 +18,9 @@ class ItemresetSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Itemreset
-        fields = ('par', 'reset_level')
+        fields = ('id', 'par', 'reset_level', 'week')
+
+       
+class WeeklySubmissionSerializer(serializers.Serializer):
+    week_number = serializers.IntegerField()
+    submission_status = serializers.CharField()

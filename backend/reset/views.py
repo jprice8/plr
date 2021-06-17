@@ -4,13 +4,18 @@ import datetime
 # from http.client import ResponseNotReady
 # from django.contrib.auth import get_user_model
 from django.utils import timezone
-from rest_framework import generics, status
+from django.core.paginator import Paginator
+from rest_framework import generics, serializers, status, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.renderers import JSONRenderer
+from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.settings import api_settings
 
-from .serializers import ItemresetSerializer, ParSerializer 
+from .serializers import ItemresetSerializer, ParSerializer, WeeklySubmissionSerializer
 from .models import Itemreset, Par
+from .pagination import MyPaginationMixin
 
 
 #### Par Views ####
@@ -105,6 +110,19 @@ def itemresest_detail(request, pk):
         item_reset.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+@api_view(['GET'])
+def itemreset_by_week(request, week):
+    """
+    Retrieve itemresets for a given week
+    """
+    item_resets = Itemreset.objects.filter(
+        week=week
+    )
+
+    if request.method == 'GET':
+        serializer = ItemresetSerializer(item_resets, many=True)
+        return Response(serializer.data)
+
 
 # Weekly Submission List
 @api_view(['GET'])
@@ -154,3 +172,63 @@ def weekly_submission_list(request):
 
     if request.method == 'GET':
         return Response(data)
+
+
+class WeeklySubmissions(APIView, MyPaginationMixin):
+    # Get list of dicts that have week number and submission status
+    
+    def calc_submission_weeks(self):
+        # today = datetime.datetime.today()
+        today = timezone.now()
+        # current week number e.g. 17 for last week of April
+        current_week_number = int(today.strftime('%W')) 
+
+        # create a list of week numbers, 1 indexed
+        weeks = []
+        for x in range(1, current_week_number + 1):
+            weeks.append(x)
+
+        # find out which weeks have submitted forms
+        resets = Itemreset.objects.all()
+
+        weeks_submitted = []
+        for i in resets:
+            weeks_submitted.append(i.week)
+        
+        # Get unique weeks
+        weeks_submitted = list(set(weeks_submitted))
+
+        # loop through weeks and if there is a matching submission, set status
+        submission_status = []
+        for idx, val in enumerate(weeks):
+            if weeks[idx] in weeks_submitted:
+                # Week has a submission
+                submission_status.append('Submitted') 
+            elif weeks[idx] == current_week_number:
+                # It's the current week
+                submission_status.append('New')
+            elif weeks[idx] not in weeks_submitted:
+                submission_status.append('Missed')
+
+        data = []
+        for i in range(len(weeks)):
+            inner_temp = {}
+            inner_temp['week_number'] = weeks[i]
+            inner_temp['submission_status'] = submission_status[i]
+            data.append(inner_temp)
+
+        return data
+
+    serializer_class = WeeklySubmissionSerializer
+    pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
+
+    # We need to override the get method to insert pagination
+    def get(self, request):
+
+        data = self.calc_submission_weeks()
+
+        page = self.paginate_queryset(data)
+        # page = self.paginate_queryset(self.qs)
+        if page is not None:
+            serializer = self.serializer_class(page, many=True)
+            return self.get_paginated_response(serializer.data)

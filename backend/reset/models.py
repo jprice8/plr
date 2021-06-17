@@ -48,3 +48,6 @@ class Itemreset(models.Model):
     week = models.IntegerField(null=False)
     month = models.IntegerField(null=False)
     year = models.IntegerField(null=False)
+
+    def __str__(self):
+        return f'Itemreset ID {self.id} for Par ID {self.par.id}, week {self.week}'

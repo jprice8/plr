@@ -12,7 +12,7 @@ from reset.models import Par, Itemreset
 
 
 PARS_URL = reverse('reset:pars')
-ITEMRESETS_URL = reverse('reset:itemreset')
+ITEMRESETS_URL = reverse('reset:itemresets')
 
 
 def create_user(**params):
@@ -188,3 +188,10 @@ class DBFullTest(TestCase):
     #     Test GET unique itemreset 
     #     """
     #     itemreset = Itemreset.objects.all
+
+    def test_weekly_submission_request(self):
+        """
+        Test GET weekly submissions
+        """
+        res = self.client.get('http://localhost:8000/api/reset/weekly-submissions/')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
