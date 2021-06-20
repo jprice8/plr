@@ -84,12 +84,12 @@ class DBFullTest(TestCase):
     Test the reset API with objects in the DB
     """
     def setUp(self):
-        self.user = create_user(
-            email='lebronjames@lakers.com',
-            password='bronny123'
-        )
-        self.client = APIClient()
-        self.client.force_authenticate(user=self.user)
+        # self.user = create_user(
+        #     email='lebronjames@lakers.com',
+        #     password='bronny123'
+        # )
+        # self.client = APIClient()
+        # self.client.force_authenticate(user=self.user)
 
         # Create a par
         today = datetime.date(2021, 5, 25)
@@ -166,28 +166,26 @@ class DBFullTest(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
 
-    # #### Itemreset Tests ####
-    # def test_create_itemreset_successful(self):
-    #     """
-    #     Test POST for creating itemreset
-    #     """
-    #     today = datetime.date(2021, 6, 10)
-    #     pars = Par.objects.all()
-    #     submissions = Submission.objects.all()
-    #     payload = {
-    #         'par': pars[0],
-    #         'submission': submissions[0],
-    #         'last_updated': today,
-    #         'reset_level': 2
-    #     }
-    #     res = self.client.post(ITEMRESETS_URL, payload)
-    #     self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+    #### Itemreset Tests ####
+    def test_create_itemreset_successful(self):
+        """
+        Test POST for creating itemreset
+        """
+        pars = Par.objects.all()
+        payload = {
+            'par': pars[0],
+            'reset_level': 2
+        }
+        res = self.client.post(ITEMRESETS_URL, payload)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
-    # def test_get_itemreset_successful(self):
-    #     """
-    #     Test GET unique itemreset 
-    #     """
-    #     itemreset = Itemreset.objects.all
+    def test_get_itemreset_successful(self):
+        """
+        Test GET unique itemreset 
+        """
+        res = self.client.get(ITEMRESETS_URL)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
 
     def test_weekly_submission_request(self):
         """
@@ -195,3 +193,5 @@ class DBFullTest(TestCase):
         """
         res = self.client.get('http://localhost:8000/api/reset/weekly-submissions/')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        

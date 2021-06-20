@@ -2,20 +2,6 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response 
 
 
-class CustomPagination(LimitOffsetPagination):
-	def get_paginated_response(self, data):
-		return Response({
-			'meta': {
-				'limit': self.get_limit(self.request),
-				'next': self.get_next_link(),
-				'offset': self.get_offset(self.request),
-				'previous': self.get_previous_link(),
-				'total_count': self.count
-			},
-			'objects': data
-		})
-
-
 class MyPaginationMixin(object):
 
 	@property 

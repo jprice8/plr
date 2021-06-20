@@ -51,3 +51,12 @@ class Itemreset(models.Model):
 
     def __str__(self):
         return f'Itemreset ID {self.id} for Par ID {self.par.id}, week {self.week}'
+
+    def calc_reduction_qty(self):
+        reduction_qty = self.par.current_par_qty - self.reset_level
+        return reduction_qty
+
+    def calc_ext_reduction(self):
+        reduction_qty = self.par.current_par_qty - self.reset_level
+        ext = self.par.unit_cost * reduction_qty
+        return ext
