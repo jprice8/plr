@@ -54,33 +54,33 @@ class DashboardTest(TestCase):
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         
 
-    def test_weeks_completed(self):
-        """
-        Test for calc weeks completed
-        """
-        res = self.client.get(DASHBOARD_STATS_URL)
-        self.assertEqual(Par.objects.count(), 1)
-        self.assertEqual(res.data, 
-        [	
-            {
-                'id': 1,
-                'metric': 'total_reduction',
-                'value': 100,
-                'icon': 'CashIcon'
-            },
-            {
-                'id': 2,
-                'metric': 'weeks_completed',
-                'value': 1,
-                'icon': 'ClockIcon'
-            },
-            {
-                'id': 3,
-                'metric': 'pars_reduced',
-                'value': 3,
-                'icon': 'TrendingDownIcon'
-            }
-        ])
+    # def test_weeks_completed(self):
+    #     """
+    #     Test for calc weeks completed
+    #     """
+    #     res = self.client.get(DASHBOARD_STATS_URL)
+    #     self.assertEqual(Par.objects.count(), 1)
+    #     self.assertEqual(res.data, 
+    #     [	
+    #         {
+    #             'id': 1,
+    #             'metric': 'total_reduction',
+    #             'value': 100,
+    #             'icon': 'CashIcon'
+    #         },
+    #         {
+    #             'id': 2,
+    #             'metric': 'weeks_completed',
+    #             'value': 1,
+    #             'icon': 'ClockIcon'
+    #         },
+    #         {
+    #             'id': 3,
+    #             'metric': 'pars_reduced',
+    #             'value': 3,
+    #             'icon': 'TrendingDownIcon'
+    #         }
+    #     ])
 
 
 class TestDashboardEnpoint(TestCase):
@@ -161,6 +161,7 @@ class TestDashboardEnpoint(TestCase):
         # Create Itemreset 1
         ir1 = Itemreset(
             par = p1,
+            user = self.user,
             reset_level = 2,
             week = 24,
             month = 6,
@@ -171,6 +172,7 @@ class TestDashboardEnpoint(TestCase):
         # Create Itemreset 2
         ir2 = Itemreset(
             par = p2,
+            user = self.user,
             reset_level = 2,
             week = 24,
             month = 6,
@@ -181,6 +183,7 @@ class TestDashboardEnpoint(TestCase):
         # Create Itemreset 3
         ir3 = Itemreset(
             par = p3,
+            user = self.user,
             reset_level = 2,
             week = 24,
             month = 6,
@@ -212,8 +215,8 @@ class TestDashboardEnpoint(TestCase):
         for i in itemresets:
             weeks_completed.append(i.week)
 
-        weeks_completed = list(set(weeks_completed))
-        self.assertEqual(len(weeks_completed), 1)
+        weeks_completed = len(list(set(weeks_completed)))
+        self.assertEqual(weeks_completed, 1)
 
     def test_pars_reduced_calculation(self):
         """
@@ -228,4 +231,19 @@ class TestDashboardEnpoint(TestCase):
         pars_reduced = list(set(pars_reduced))
         self.assertEqual(len(pars_reduced), 3)
 
+    def test_stats_reset_list(self):
+        """
+        Test the list sent to the user breaking out their reset stats
+        """
+        res = self.client.get(reverse('dashboard:list'))
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+    def test_stat_reset_detail(self):
+        """
+        Test the detail view sent to the user for drilling down into
+        reset details
+        """
+        itemreset = Itemreset.objects.all()[0]
+        res = self.client.get(reverse('dashboard:detail', kwargs={'pk': itemreset.id}))
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
     

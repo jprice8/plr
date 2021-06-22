@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models.aggregates import Max
+from django.conf import settings
 
 
 class Par(models.Model):
@@ -18,6 +19,7 @@ class Par(models.Model):
     wt_avg_cost = models.FloatField(null=False)
     unit_cost = models.FloatField(null=False)
     dept_id = models.CharField(null=False, max_length=50)
+    mfr = models.CharField(null=False, max_length=250, default='Medline')
 
     # Par 
     current_par_qty = models.IntegerField(null=False)
@@ -36,18 +38,25 @@ class Par(models.Model):
     # Meta
     review_date = models.DateField(null=False)
 
+    class Meta:
+        ordering = ['-review_date', '-ext_delta', 'id']
+
     def __str__(self):
         return f'Par # {self.id}, cur: {self.current_par_qty}, rec: {self.recommended_par_qty}'
 					
 
 class Itemreset(models.Model):
-    par = models.ForeignKey(Par, on_delete=models.CASCADE)
+    par = models.ForeignKey(Par, related_name='itemresets', on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     last_updated = models.DateField(auto_now=True)
     reset_level = models.IntegerField(null=False)
 
     week = models.IntegerField(null=False)
     month = models.IntegerField(null=False)
     year = models.IntegerField(null=False)
+
+    class Meta:
+        ordering = ['-week']
 
     def __str__(self):
         return f'Itemreset ID {self.id} for Par ID {self.par.id}, week {self.week}'

@@ -6,25 +6,33 @@ import datetime
 from django.utils import timezone
 from django.core.paginator import Paginator
 from rest_framework import generics, serializers, status, viewsets
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.renderers import JSONRenderer
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.settings import api_settings
+from rest_framework.permissions import IsAuthenticated
 
 from .serializers import ItemresetSerializer, ParSerializer, WeeklySubmissionSerializer
 from .models import Itemreset, Par
 from .pagination import MyPaginationMixin
+from users.models import Profile
 
 
 #### Par Views ####
 class ParList(APIView):
     """
-    Return all pars in the system, or create a new par
+    Return
     """
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, format=None):
-        pars = Par.objects.all()
+        # Get only Pars related to the user's facility
+        user_profile = Profile.objects.get(user=request.user)
+
+        # Return the top three results to the user
+        pars = Par.objects.filter(facility_code=user_profile.facility_code)[:3]
         serializer = ParSerializer(pars, many=True)
         return Response(serializer.data)
 
@@ -37,6 +45,7 @@ class ParList(APIView):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([IsAuthenticated])
 def par_detail(request, pk):
     """
     Retrieve, update or delete a par
@@ -67,6 +76,8 @@ class ItemresetList(APIView):
     """
     Return all item resets in the system, or create a new one
     """
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, format=None):
         item_reset = Itemreset.objects.all()
         serializer = ItemresetSerializer(item_reset, many=True)
@@ -86,6 +97,7 @@ class ItemresetList(APIView):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([IsAuthenticated])
 def itemresest_detail(request, pk):
     """
     Retrieve, update or delete an itemreset
@@ -110,13 +122,17 @@ def itemresest_detail(request, pk):
         item_reset.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def itemreset_by_week(request, week):
     """
     Retrieve itemresets for a given week
     """
     item_resets = Itemreset.objects.filter(
         week=week
+    ).filter(
+        user=request.user.id
     )
 
     if request.method == 'GET':

@@ -13,6 +13,8 @@ from reset.models import Par, Itemreset
 
 PARS_URL = reverse('reset:pars')
 ITEMRESETS_URL = reverse('reset:itemresets')
+WEEKLYSUBMISSIONS_URL = reverse('reset:weekly-submissions')
+WEEKS_URL = reverse('reset:weeks')
 
 
 def create_user(**params):
@@ -84,12 +86,12 @@ class DBFullTest(TestCase):
     Test the reset API with objects in the DB
     """
     def setUp(self):
-        # self.user = create_user(
-        #     email='lebronjames@lakers.com',
-        #     password='bronny123'
-        # )
-        # self.client = APIClient()
-        # self.client.force_authenticate(user=self.user)
+        self.user = create_user(
+            email='lebronjames@lakers.com',
+            password='bronny123'
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
 
         # Create a par
         today = datetime.date(2021, 5, 25)
@@ -125,56 +127,60 @@ class DBFullTest(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data), 1)
 
-    def test_update_par_successful(self):
-        """
-        Test PUT to update the par successfully
-        """
-        today = datetime.date(2021, 5, 25)
-        payload = {
-            'facility_code': '872',
-            'location_id': '84',
-            'location_name': 'SURGERY PAR/STOREROOM',
-            'description': 'SEALER, VESSEL ENDOWRIST ONE 8MM DAVINCI',
-            'imms': '123456',
-            'uom_conv_factor': 1,
-            'uom': 'EA',
-            'wt_avg_cost': 595,
-            'unit_cost': 595,
-            'dept_id': '7021',
-            'current_par_qty': 4,
-            'recommended_par_qty': 1,
-            'qty_delta': 3,
-            'ext_delta': 1190,
-            'expense_account_no': '4110',
-            'review_date': today
-        }
-        par = Par.objects.all()[0]
-        PAR_URL = reverse('reset:par', kwargs={'pk': par.id})
+    # def test_update_par_successful(self):
+    #     """
+    #     Test PUT to update the par successfully
+    #     """
+    #     today = datetime.date(2021, 5, 25)
+    #     payload = {
+    #         'facility_code': '872',
+    #         'location_id': '84',
+    #         'location_name': 'SURGERY PAR/STOREROOM',
+    #         'description': 'SEALER, VESSEL ENDOWRIST ONE 8MM DAVINCI',
+    #         'imms': '123456',
+    #         'uom_conv_factor': 1,
+    #         'uom': 'EA',
+    #         'wt_avg_cost': 595,
+    #         'unit_cost': 595,
+    #         'dept_id': '7021',
+    #         'current_par_qty': 4,
+    #         'recommended_par_qty': 1,
+    #         'qty_delta': 3,
+    #         'ext_delta': 1190,
+    #         'expense_account_no': '4110',
+    #         'review_date': today
+    #     }
+    #     par = Par.objects.all()[0]
+    #     PAR_URL = reverse('reset:par', kwargs={'pk': par.id})
         
-        res = self.client.put(PAR_URL, payload)
+    #     res = self.client.put(PAR_URL, payload)
 
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
+    #     self.assertEqual(res.status_code, status.HTTP_200_OK)
 
-    def test_delete_pars_successful(self):
-        """
-        Test DELETE to remove par from db
-        """
-        par = Par.objects.all()[0]
-        PAR_URL = reverse('reset:par', kwargs={'pk': par.id})
+    # def test_delete_pars_successful(self):
+    #     """
+    #     Test DELETE to remove par from db
+    #     """
+    #     par = Par.objects.all()[0]
+    #     PAR_URL = reverse('reset:par', kwargs={'pk': par.id})
         
-        res = self.client.delete(PAR_URL)
+    #     res = self.client.delete(PAR_URL)
 
-        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+    #     self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
 
-    #### Itemreset Tests ####
+#     #### Itemreset Tests ####
     def test_create_itemreset_successful(self):
         """
         Test POST for creating itemreset
         """
         pars = Par.objects.all()
         payload = {
-            'par': pars[0],
-            'reset_level': 2
+            'par': pars[0].id,
+            'user': self.user.id,
+            'reset_level': 2,
+            'week': 24,
+            'month': 6,
+            'year': 2021
         }
         res = self.client.post(ITEMRESETS_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
@@ -192,6 +198,13 @@ class DBFullTest(TestCase):
         Test GET weekly submissions
         """
         res = self.client.get('http://localhost:8000/api/reset/weekly-submissions/')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+    def test_paginated_weeks(self):
+        """
+        Test the paginated weeks being returned
+        """
+        res = self.client.get(WEEKS_URL)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
         

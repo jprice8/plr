@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.conf import settings
 from rest_framework import authentication
 
 
@@ -62,3 +63,20 @@ class BearerAuthentication(authentication.TokenAuthentication):
     Authorization: Bearer xxxxx-xxxxx-xxxxx
     """
     keyword = 'Bearer'
+
+
+class Profile(models.Model):
+    """
+    The Profile is a one-to-one child of the User model.
+    It holds descriptive information of the user that is not
+    auth related.
+    """
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+    first_name = models.CharField(max_length=100, blank=True)
+    last_name = models.CharField(max_length=100, blank=True)
+    facility_code = models.CharField(max_length=4, blank=True)
+    title = models.CharField(max_length=100, blank=True)
+    phone = models.CharField(max_length=100, blank=True)
