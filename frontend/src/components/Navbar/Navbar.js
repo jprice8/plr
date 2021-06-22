@@ -113,7 +113,7 @@ function Navbar({ user, logUserOut, ...props }) {
         </EuiHeaderSectionItem>
         <EuiHeaderSectionItem border="right">
           <EuiHeaderLinks aria-label="app navigation links">
-            <EuiHeaderLink iconType="dashboardApp" href="#">
+            <EuiHeaderLink iconType="dashboardApp" href="/dashboard">
               Dashboard
             </EuiHeaderLink>
 
@@ -121,7 +121,7 @@ function Navbar({ user, logUserOut, ...props }) {
               Reset
             </EuiHeaderLink>
 
-            <EuiHeaderLink iconType="visualizeApp" href="#">
+            <EuiHeaderLink iconType="visualizeApp" href="/review">
               Review
             </EuiHeaderLink>
           </EuiHeaderLinks>

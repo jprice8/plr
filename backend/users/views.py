@@ -23,14 +23,12 @@ class UserList(generics.ListAPIView):
     Return all users in the system
     """
     # permission_classes = (IsAuthenticated,)
-    renderer_classes = [JSONRenderer]
-
 
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
 
 
-class GetUser(generics.RetrieveAPIView):
+class GetUser(generics.RetrieveUpdateAPIView):
     """
     Return the user's object
     """
