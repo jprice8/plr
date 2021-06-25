@@ -16,7 +16,7 @@ class ParSerializer(serializers.ModelSerializer):
     """
     Serializer for PAR object
     """
-    itemresets = ItemresetSerializer(many=True, read_only=True)
+    itemresets = ItemresetSerializer(many=False, read_only=True)
 
     class Meta:
         model = Par
