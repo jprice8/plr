@@ -23,7 +23,15 @@ from users.models import Profile
 #### Par Views ####
 class ParList(APIView):
     """
-    Return
+    Return the top n results from the Par table. The Par table is sorted
+    by most recent review date and then by the highest ext delta. It then sorts
+    any ties by the lowest ID.
+
+    The Par serializer includes any related itemresets in a nested field.
+
+    #TODO: Confirm solution to this issue: As of right now, there is a risk of
+    reshowing the previous week's pars if the ETL script fails to run at the
+    beginning of the week. Need a solution for this.
     """
     permission_classes = [IsAuthenticated]
 
@@ -32,7 +40,7 @@ class ParList(APIView):
         user_profile = Profile.objects.get(user=request.user)
 
         # Return the top three results to the user
-        pars = Par.objects.filter(facility_code=user_profile.facility_code)[:3]
+        pars = Par.objects.filter(facility_code=user_profile.facility_code)[:5]
         serializer = ParSerializer(pars, many=True)
         return Response(serializer.data)
 

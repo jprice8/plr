@@ -46,7 +46,7 @@ class Par(models.Model):
 					
 
 class Itemreset(models.Model):
-    par = models.ForeignKey(Par, related_name='itemresets', on_delete=models.CASCADE)
+    par = models.ForeignKey(Par, related_name='itemresets', on_delete=models.CASCADE, unique=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     last_updated = models.DateField(auto_now=True)
     reset_level = models.IntegerField(null=False)
@@ -56,7 +56,7 @@ class Itemreset(models.Model):
     year = models.IntegerField(null=False)
 
     class Meta:
-        ordering = ['-week']
+        ordering = ['-week', 'id']
 
     def __str__(self):
         return f'Itemreset ID {self.id} for Par ID {self.par.id}, week {self.week}'

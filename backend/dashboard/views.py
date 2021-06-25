@@ -1,4 +1,6 @@
 #type:ignore
+import datetime
+import enum
 from django.db.models import query
 from django.shortcuts import render
 from rest_framework import status, generics
@@ -114,3 +116,40 @@ class DashboardStatDetail(generics.RetrieveAPIView):
 	queryset = Itemreset.objects.all()
 	serializer_class = StatItemresetDetailSerializer
 
+
+class DashboardWeeklyReductionChart(APIView):
+	"""
+	An endpoint to fuel the chart on the dashboard showing reduction ext
+	by week.
+	"""
+	permission_classes = [IsAuthenticated]
+
+	def get(self, request, format=None):
+		"""
+		Return two lists.
+		1. The list of YTD week numbers
+		2. The list of reduction ext for its respective week
+		"""
+		# Get users itemresets
+		itemresets = Itemreset.objects.filter(user=request.user.id)
+
+		today = datetime.datetime.today()
+		# Current week one indexed
+		current_week_number1 = int(today.strftime('%W')) + 1
+
+		labels = []
+		data = []
+		for i in range(1, current_week_number1):
+			labels.append(i)
+			total_weekly_redux = 0
+			for idx, val in enumerate(itemresets):
+				if val.week == i:
+					total_weekly_redux += val.calc_ext_reduction()
+			
+			data.append(total_weekly_redux)
+
+		data = {
+			'labels': labels, 
+			'data': data
+		}
+		return Response(data)
