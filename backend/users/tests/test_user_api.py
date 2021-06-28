@@ -1,11 +1,14 @@
 import json
 import datetime
+from unittest.mock import MagicMock
+
 from django.test import TestCase 
 from django.contrib.auth import get_user_model
 from django.urls import reverse 
+from django.core.files import File
 
 from rest_framework.test import APIClient, APITestCase
-from rest_framework import status 
+from rest_framework import status
 
 
 CREATE_USER_URL = reverse('users:create')
@@ -27,6 +30,7 @@ class PublicUserApiTest(APITestCase):
         """
         Test creating user with valid payload is successful
         """
+        file_mock = MagicMock(spec=File, name='ImageMock')
         payload = {
             'email': 'lebronjames@lakers.com',
             'password': 'bronny123',
@@ -34,7 +38,9 @@ class PublicUserApiTest(APITestCase):
             'last_name': 'james',
             'facility_code': '872',
             'title': 'DMM',
-            'phone': '281-555-1234'
+            'phone': '281-555-1234',
+            'profile_picture': file_mock,
+            'joined_on': datetime.datetime.today()
         }
         res = self.client.post(CREATE_USER_URL, payload)
 

@@ -1,3 +1,4 @@
+#type:ignore
 import datetime
 # import enum
 
@@ -13,6 +14,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.settings import api_settings
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.parsers import MultiPartParser, FormParser
 
 from .serializers import ItemresetSerializer, ParSerializer, WeeklySubmissionSerializer
 from .models import Itemreset, Par
@@ -34,6 +36,7 @@ class ParList(APIView):
     beginning of the week. Need a solution for this.
     """
     permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
 
     def get(self, request, format=None):
         # Get only Pars related to the user's facility

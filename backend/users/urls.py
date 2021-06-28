@@ -19,5 +19,7 @@ urlpatterns = [
     # Get the user
     path('me/', views.GetUser.as_view(), name='me'),
 
-    path('hello/', views.HelloView.as_view(), name='hello'),
+    # GET or PUT/PATCH the profile instance
+    path('<int:pk>/profile/', views.ProfileDetailView.as_view(), name='profile')
 ]
+

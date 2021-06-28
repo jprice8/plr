@@ -158,3 +158,6 @@ REST_FRAMEWORK = {
 #     r'^http://0.0.0.0:*$'
 # ]
 CORS_ALLOW_ALL_ORIGINS = True
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'

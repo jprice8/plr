@@ -5,6 +5,10 @@ from django.conf import settings
 from rest_framework import authentication
 
 
+def upload_to(instance, filename):
+    return 'profile_pictures/{filename}'.format(filename=filename)
+
+
 class UserManager(BaseUserManager):
     """
     Define a model manager for User model with no username field.
@@ -80,3 +84,5 @@ class Profile(models.Model):
     facility_code = models.CharField(max_length=4, blank=True)
     title = models.CharField(max_length=100, blank=True)
     phone = models.CharField(max_length=100, blank=True)
+    profile_picture = models.ImageField(_("Image"), upload_to=upload_to, default='profile_pictures/default.jpg', blank=True)
+    joined_on = models.DateTimeField(auto_now_add=True)

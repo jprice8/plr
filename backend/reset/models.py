@@ -48,7 +48,7 @@ class Par(models.Model):
 class Itemreset(models.Model):
     par = models.OneToOneField(Par, related_name='itemresets', on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    last_updated = models.DateField(auto_now=True)
+    last_updated = models.DateTimeField(auto_now=True)
     reset_level = models.IntegerField(null=False)
 
     week = models.IntegerField(null=False)
