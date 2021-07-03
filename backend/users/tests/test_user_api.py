@@ -1,14 +1,18 @@
 import json
 import datetime
-from unittest.mock import MagicMock
+# import tempfile
 
 from django.test import TestCase 
 from django.contrib.auth import get_user_model
 from django.urls import reverse 
-from django.core.files import File
+from django.core.files.uploadedfile import SimpleUploadedFile
+
+import pytest
 
 from rest_framework.test import APIClient, APITestCase
 from rest_framework import status
+
+from users.models import Profile
 
 
 CREATE_USER_URL = reverse('users:create')
@@ -19,18 +23,21 @@ ME_URL = reverse('users:me')
 def create_user(**params):
     return get_user_model().objects.create_user(**params)
 
+@pytest.mark.django_db
 class PublicUserApiTest(APITestCase):
-    """
-    Test the user's api
-    """
     def setUp(self):
         self.client = APIClient()
+        get_user_model().objects.create()
 
     def test_create_valid_user_success(self):
         """
         Test creating user with valid payload is successful
         """
-        file_mock = MagicMock(spec=File, name='ImageMock')
+        # image = tempfile.NamedTemporaryFile(suffix=".jpg").name
+        # image = SimpleUploadedFile(
+        #     'faker_file.jpg',
+        #     b"these are the file contents"
+        # )
         payload = {
             'email': 'lebronjames@lakers.com',
             'password': 'bronny123',
@@ -39,26 +46,90 @@ class PublicUserApiTest(APITestCase):
             'facility_code': '872',
             'title': 'DMM',
             'phone': '281-555-1234',
-            'profile_picture': file_mock,
+            # 'profile_picture': image,
             'joined_on': datetime.datetime.today()
         }
+        # pytest.set_trace()
         res = self.client.post(CREATE_USER_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
-    def test_user_exists(self):
+
+@pytest.mark.django_db
+class PrivateUserApiTest(APITestCase):
+    def setUp(self):
+        self.user = create_user(
+            email='randysavage@woo.com',
+            password='Show1234',
+        )
+        p1 = Profile.objects.create(
+            user_id=self.user.id,
+            first_name='randy',
+            last_name='savage',
+            facility_code='872',
+            title='DMM',
+            phone='210-555-1234'
+        )
+        self.user.profile = p1
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+        self.profile_url = reverse('users:profile', kwargs={'pk': self.user.profile.id})
+        self.password_reset_request_url = reverse('password_reset:reset-password-request')
+
+
+    def test_get_user_object(self):
         """
-        Test creating a user that already exists fails
+        Test retrieving user object
+        """
+        res = self.client.get(ME_URL)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+    def test_get_user_profile(self):
+        """
+        Test retrieving user profile object
+        """
+        res = self.client.get(self.profile_url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+    def test_update_user_profile(self):
+        """
+        Test updating a single field in the profile object
         """
         payload = {
-            'email': 'lebronjames@lakers.com',
-            'password': 'bronny123'
+            'first_name': 'Randall'
         }
-        create_user(**payload)
+        res = self.client.put(self.profile_url, payload)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
 
-        res = self.client.post(CREATE_USER_URL, payload)
-        
-        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+    def test_get_password_reset_token(self):
+        """
+        Test the ability to retrieve a password reset token for an email
+        """
+        payload = {
+            'email': 'randysavage@woo.com'
+        }
+        res = self.client.post(self.password_reset_request_url, payload)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+    # def test_user_exists(self):
+    #     """
+    #     Test creating a user that already exists fails
+    #     """
+    #     payload = {
+    #         'email': 'lebronjames@lakers.com',
+    #         'password': 'bronny123',
+    #         'first_name': 'lebron',
+    #         'last_name': 'james',
+    #         'facility_code': '872',
+    #         'title': 'DMM',
+    #         'phone': '281-555-1234',
+    #         # 'profile_picture': image,
+    #         'joined_on': datetime.datetime.today()
+    #     }
+    #     create_user(**payload)
+
+    #     res = self.client.post(CREATE_USER_URL, payload)
+    #     self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
 #     # TODO: password too short failiing
 #     # def test_password_too_short(self):
@@ -77,20 +148,20 @@ class PublicUserApiTest(APITestCase):
 #     #     ).exists()
 #     #     self.assertFalse(user_exists)
 
-#     def test_create_token_for_user(self):
-#         """
-#         Test that token is created for user
-#         """
-#         payload_create = {
-#             'email': 'lebronjames@lakers.com',
-#             'password': 'bronny123'
-#         }
-#         payload_token = {
-#             'username': 'lebronjames@lakers.com',
-#             'password': 'bronny123'
-#         }
-#         create_user(**payload_create)
-#         res = self.client.post(TOKEN_URL, payload_token)
+    # def test_create_token_for_user(self):
+    #     """
+    #     Test that token is created for user
+    #     """
+    #     payload_create = {
+    #         'email': 'lebronjames@lakers.com',
+    #         'password': 'bronny123'
+    #     }
+    #     payload_token = {
+    #         'username': 'lebronjames@lakers.com',
+    #         'password': 'bronny123'
+    #     }
+    #     create_user(**payload_create)
+    #     res = self.client.post(TOKEN_URL, payload_token)
 
 #         self.assertIn('token', res.data)
 #         self.assertEqual(res.status_code, status.HTTP_200_OK)

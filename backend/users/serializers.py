@@ -23,7 +23,7 @@ class UserSerializer(serializers.ModelSerializer):
     facility_code = serializers.CharField(max_length=4, allow_blank=True, source="profile.facility_code")
     title = serializers.CharField(max_length=100, allow_blank=True, source="profile.title")
     phone = serializers.CharField(max_length=100, allow_blank=True, source="profile.phone")
-    profile_picture = serializers.ImageField(source="profile.profile_picture")
+    profile_picture = serializers.ImageField(required=False, source="profile.profile_picture")
     joined_on = serializers.DateTimeField(required=False, source="profile.joined_on")
     profile_id = serializers.IntegerField(required=False, source="profile.id")
 

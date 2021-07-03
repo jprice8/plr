@@ -5,13 +5,13 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.test.client import RequestFactory
 from django.urls import reverse
+import pytest
 
 from rest_framework.test import APIClient
 from rest_framework import status 
 
 from reset.models import Par, Itemreset
 from users.models import Profile
-
 
 PARS_URL = reverse('reset:pars')
 ITEMRESETS_URL = reverse('reset:itemresets')
@@ -22,7 +22,7 @@ WEEKS_URL = reverse('reset:weeks')
 def create_user(**params):
     return get_user_model().objects.create_user(**params)
 
-
+@pytest.mark.django_db
 class TestParViews(TestCase):
     """
     Test the Par API endpoints from the reset views file
@@ -126,8 +126,6 @@ class TestParViews(TestCase):
             review_date = datetime.date(2021, 5, 25)
         )
         p4.save()
-
-    
 
     
     #### Par Tests ####

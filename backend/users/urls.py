@@ -8,7 +8,7 @@ import users.views as views
 app_name = 'users'
 urlpatterns = [
     # Get user list
-    path('', views.UserList.as_view(), name='user_list'),
+    # path('', views.UserList.as_view(), name='user_list'),
 
     # Create user
     path('create/', views.CreateUserView.as_view(), name='create'),

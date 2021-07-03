@@ -11,6 +11,7 @@ __pycache__/
 # coverage result
 .coverage
 /coverage/
+htmlcov
 
 # pycharm
 .idea/
@@ -45,3 +46,6 @@ spritesmith.scss
 
 # templated email
 tmp_email/
+
+# GCP Creds
+testplr-21716eea11e2.json
