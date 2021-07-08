@@ -11,10 +11,11 @@ class StatItemresetSerializer(serializers.ModelSerializer):
     """
     reduction_ext = serializers.FloatField(source="calc_ext_reduction")
     description = serializers.CharField(source="par.description")
+    mfr = serializers.CharField(source="par.mfr")
 
     class Meta:
         model = Itemreset
-        fields = ('id', 'par', 'description', 'reduction_ext', 'week', 'year')
+        fields = ('id', 'par', 'description', 'mfr', 'reduction_ext', 'week', 'year')
 
 
 class StatItemresetDetailSerializer(serializers.ModelSerializer):
@@ -33,11 +34,19 @@ class StatItemresetDetailSerializer(serializers.ModelSerializer):
     unit_cost = serializers.CharField(source="par.unit_cost")
     dept_id = serializers.CharField(source="par.dept_id")
     mfr = serializers.CharField(source="par.mfr")
+    mfr_cat = serializers.CharField(source="par.mfr_cat")
 
     current_par_qty = serializers.IntegerField(source="par.current_par_qty")
     recommended_par_qty = serializers.IntegerField(source="par.recommended_par_qty")
     expense_account_no = serializers.CharField(source="par.expense_account_no")
     reduction_ext = serializers.FloatField(source="calc_ext_reduction")
+
+    adjustments_52_weeks = serializers.IntegerField(source="par.adjustments_52_weeks")
+    issues_52_weeks = serializers.IntegerField(source="par.issues_52_weeks")
+
+    awa = serializers.IntegerField(source="par.awa")
+    awi = serializers.IntegerField(source="par.awi")
+    safety = serializers.IntegerField(source="par.safety")
 
     class Meta:
         model = Itemreset
@@ -45,6 +54,7 @@ class StatItemresetDetailSerializer(serializers.ModelSerializer):
             'id', 
             'par',
             'reset_level',
+            'send_back_confirmed',
             'last_updated',
             'week', 
             'month', 
@@ -62,5 +72,11 @@ class StatItemresetDetailSerializer(serializers.ModelSerializer):
             'current_par_qty',
             'recommended_par_qty',
             'expense_account_no',
-            'reduction_ext'
+            'reduction_ext',
+            'adjustments_52_weeks',
+            'issues_52_weeks',
+            'awa',
+            'awi',
+            'safety',
+            'mfr_cat',
         )

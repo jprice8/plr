@@ -42,8 +42,17 @@ class ParList(APIView):
         # Get only Pars related to the user's facility
         user_profile = Profile.objects.get(user=request.user)
 
+            # today = datetime.datetime.today()
+        today = timezone.now()
+        # current week number e.g. 17 for last week of April
+        current_week_number = int(today.strftime('%W'))
+
         # Return the top three results to the user
-        pars = Par.objects.filter(facility_code=user_profile.facility_code)[:5]
+        pars = Par.objects.filter(
+            facility_code=user_profile.facility_code
+        ).exclude(
+            itemresets__week__lt=current_week_number
+        )[:5]
         serializer = ParSerializer(pars, many=True)
         return Response(serializer.data)
 

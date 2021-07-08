@@ -25,4 +25,7 @@ class UserAdmin(DjangoUserAdmin):
     ordering = ('email',)
 
 
-admin.site.register(Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = ('facility_code', 'first_name', 'last_name', 'title', 'phone', 'profile_picture', 'joined_on')
+
+admin.site.register(Profile, ProfileAdmin)
