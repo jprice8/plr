@@ -5,14 +5,19 @@ from django.db.models import query
 from django.shortcuts import render
 from rest_framework import status, generics
 from rest_framework import serializers
+from rest_framework.renderers import JSONRenderer
 from rest_framework.serializers import Serializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.viewsets import ReadOnlyModelViewSet
+from drf_renderer_xlsx.mixins import XLSXFileMixin
+from drf_renderer_xlsx.renderers import XLSXRenderer
 
 from reset.models import Par, Itemreset
 
 from .serializers import StatItemresetDetailSerializer, StatItemresetSerializer
+from .pagination import LargeResultsSetPagination
 
 class DashboardStats(APIView):
     """
@@ -152,6 +157,33 @@ class DashboardStatsList(generics.ListAPIView):
         return Response(serializer.data)
 
 
+class DashboardStatsListExport(XLSXFileMixin, ReadOnlyModelViewSet):
+    """Export all of the user's itemresets to an xlsx file."""
+    permission_classes = [IsAuthenticated]
+    queryset = Itemreset.objects.all()
+    serializer_class = StatItemresetDetailSerializer
+    pagination_class = LargeResultsSetPagination
+    renderer_classes = [XLSXRenderer]
+    filename = 'test.xlsx'
+
+    def list(self, request):
+        reduction_resets = []
+        for i in self.get_queryset():
+            if i.is_reset_lower_than_current():
+                reduction_resets.append(i.id)
+
+        queryset = self.get_queryset().filter(
+            user=request.user
+        ).filter(
+            send_back_confirmed=True
+        ).filter(
+            pk__in=reduction_resets
+        )
+        serializer = StatItemresetDetailSerializer(queryset, many=True)
+        return Response(serializer.data)
+ 
+
+
 class DashboardStatDetail(generics.RetrieveAPIView):
     """
     Retrieve a specific itemreset to view it's information as well 
@@ -204,3 +236,4 @@ class DashboardWeeklyReductionChart(APIView):
             'data': data
         }
         return Response(data)
+

@@ -4,6 +4,7 @@ from .models import Par, Itemreset
 
 class ParAdmin(admin.ModelAdmin):
     list_display = ('facility_code', 'location_id', 'location_name', 'mfr', 'imms', 'description', 'ext_delta', 'review_date')
+    list_filter = ('review_date',)
 
 
 class ItemresetAdmin(admin.ModelAdmin):

@@ -48,6 +48,9 @@ class StatItemresetDetailSerializer(serializers.ModelSerializer):
     awi = serializers.IntegerField(source="par.awi")
     safety = serializers.IntegerField(source="par.safety")
 
+    warehouse_send_back_qty_luom = serializers.SerializerMethodField()
+    warehouse_send_back_qty_puom = serializers.SerializerMethodField()
+
     class Meta:
         model = Itemreset
         fields = (
@@ -79,4 +82,20 @@ class StatItemresetDetailSerializer(serializers.ModelSerializer):
             'awi',
             'safety',
             'mfr_cat',
+            'warehouse_send_back_qty_luom',
+            'warehouse_send_back_qty_puom',
         )
+
+    def get_warehouse_send_back_qty_luom(self, obj):
+        """
+        Generate the quantity that is being expected to be sent back to
+        the warehouse.
+        """
+        return obj.par.current_par_qty - obj.reset_level
+
+    def get_warehouse_send_back_qty_puom(self, obj):
+        """
+        Generate the quantity that is being expected to be sent back to
+        the warehouse in purchase unit of measure.
+        """
+        return (obj.par.current_par_qty - obj.reset_level) / obj.par.uom_conv_factor
