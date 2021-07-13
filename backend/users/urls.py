@@ -8,7 +8,7 @@ import users.views as views
 app_name = 'users'
 urlpatterns = [
     # Get user list
-    path('', views.UserList.as_view(), name='user_list'),
+    # path('', views.UserList.as_view(), name='user_list'),
 
     # Create user
     path('create/', views.CreateUserView.as_view(), name='create'),
@@ -19,5 +19,7 @@ urlpatterns = [
     # Get the user
     path('me/', views.GetUser.as_view(), name='me'),
 
-    path('hello/', views.HelloView.as_view(), name='hello'),
+    # GET or PUT/PATCH the profile instance
+    path('<int:pk>/profile/', views.ProfileDetailView.as_view(), name='profile')
 ]
+

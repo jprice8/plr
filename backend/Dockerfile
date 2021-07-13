@@ -11,6 +11,7 @@ RUN apt-get update \
 
 RUN pip install --upgrade pip 
 COPY ./requirements.txt /backend/requirements.txt 
+COPY ./testplr-21716eea11e2.json testplr-21716eea11e2.json
 RUN pip install -r requirements.txt 
 
 COPY . /backend

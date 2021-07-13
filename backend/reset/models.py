@@ -4,6 +4,9 @@ from django.conf import settings
 
 
 class Par(models.Model):
+    # Market
+    market = models.CharField(null=False, max_length=150)
+
     # Facility
     facility_code = models.CharField(null=False, max_length=10)
 
@@ -19,7 +22,8 @@ class Par(models.Model):
     wt_avg_cost = models.FloatField(null=False)
     unit_cost = models.FloatField(null=False)
     dept_id = models.CharField(null=False, max_length=50)
-    mfr = models.CharField(null=False, max_length=250, default='Medline')
+    mfr = models.CharField(null=False, max_length=250, default='default')
+    mfr_cat = models.CharField(null=False, max_length=150)
 
     # Par 
     current_par_qty = models.IntegerField(null=False)
@@ -27,13 +31,13 @@ class Par(models.Model):
     qty_delta = models.IntegerField(null=False)
     ext_delta = models.FloatField(null=False)
 
-    # adjustments_52_weeks = models.IntegerField(null=False)
-    # issues_52_weeks = models.IntegerField(null=False)
+    adjustments_52_weeks = models.IntegerField(null=False)
+    issues_52_weeks = models.IntegerField(null=False)
     expense_account_no = models.CharField(null=False, max_length=100)
 
-    # awa = models.IntegerField(null=False)
-    # awi = models.IntegerField(null=False)
-    # safety = models.IntegerField(null=False)
+    awa = models.IntegerField(null=False)
+    awi = models.IntegerField(null=False)
+    safety = models.IntegerField(null=False)
 
     # Meta
     review_date = models.DateField(null=False)
@@ -46,10 +50,11 @@ class Par(models.Model):
 					
 
 class Itemreset(models.Model):
-    par = models.ForeignKey(Par, related_name='itemresets', on_delete=models.CASCADE, unique=True)
+    par = models.OneToOneField(Par, related_name='itemresets', on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    last_updated = models.DateField(auto_now=True)
+    last_updated = models.DateTimeField(auto_now=True)
     reset_level = models.IntegerField(null=False)
+    send_back_confirmed = models.BooleanField(null=False, default=False)
 
     week = models.IntegerField(null=False)
     month = models.IntegerField(null=False)
@@ -69,3 +74,13 @@ class Itemreset(models.Model):
         reduction_qty = self.par.current_par_qty - self.reset_level
         ext = self.par.unit_cost * reduction_qty
         return ext
+
+    def is_reset_lower_than_current(self):
+        """
+        Check and see whether the reset level has been set lower than the
+        current ROP level.
+        """
+        if self.reset_level < self.par.current_par_qty:
+            return True
+        else:
+            return False

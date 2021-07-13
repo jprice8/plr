@@ -1,3 +1,4 @@
+#type:ignore
 import datetime
 # import enum
 
@@ -13,6 +14,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.settings import api_settings
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.parsers import MultiPartParser, FormParser
 
 from .serializers import ItemresetSerializer, ParSerializer, WeeklySubmissionSerializer
 from .models import Itemreset, Par
@@ -34,22 +36,32 @@ class ParList(APIView):
     beginning of the week. Need a solution for this.
     """
     permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
 
     def get(self, request, format=None):
         # Get only Pars related to the user's facility
         user_profile = Profile.objects.get(user=request.user)
 
+            # today = datetime.datetime.today()
+        today = timezone.now()
+        # current week number e.g. 17 for last week of April
+        current_week_number = int(today.strftime('%W'))
+
         # Return the top three results to the user
-        pars = Par.objects.filter(facility_code=user_profile.facility_code)[:5]
+        pars = Par.objects.filter(
+            facility_code=user_profile.facility_code
+        ).exclude(
+            itemresets__week__lt=current_week_number
+        )[:5]
         serializer = ParSerializer(pars, many=True)
         return Response(serializer.data)
 
-    def post(self, request, format=None):
-        serializer = ParSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    # def post(self, request, format=None):
+    #     serializer = ParSerializer(data=request.data)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -131,73 +143,6 @@ def itemresest_detail(request, pk):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def itemreset_by_week(request, week):
-    """
-    Retrieve itemresets for a given week
-    """
-    item_resets = Itemreset.objects.filter(
-        week=week
-    ).filter(
-        user=request.user.id
-    )
-
-    if request.method == 'GET':
-        serializer = ItemresetSerializer(item_resets, many=True)
-        return Response(serializer.data)
-
-
-# Weekly Submission List
-@api_view(['GET'])
-def weekly_submission_list(request):
-    """
-    Retrieve list of weeks and whether submissions were submitted for them
-    """
-    # today = datetime.datetime.today()
-    today = timezone.now()
-    # current week number e.g. 17 for last week of April
-    current_week_number = int(today.strftime('%W')) 
-
-    # create a list of week numbers, 1 indexed
-    weeks = []
-    for x in range(1, current_week_number + 1):
-        weeks.append(x)
-
-    # find out which weeks have submitted forms
-    resets = Itemreset.objects.all()
-
-    weeks_submitted = []
-    for i in resets:
-        weeks_submitted.append(i.week)
-    
-    # Get unique weeks
-    weeks_submitted = list(set(weeks_submitted))
-
-    # loop through weeks and if there is a matching submission, set status
-    submission_status = []
-    for idx, val in enumerate(weeks):
-        if weeks[idx] in weeks_submitted:
-            # Week has a submission
-            submission_status.append('Submitted') 
-        elif weeks[idx] == current_week_number:
-            # It's the current week
-            submission_status.append('New')
-        elif weeks[idx] not in weeks_submitted:
-            submission_status.append('Missed')
-
-    data = {
-        'weeks': weeks,
-        'submission_status': submission_status,
-        'current_week': current_week_number,
-        'current_month': today.strftime('%B'),
-        'current_year': today.year
-    }
-
-    if request.method == 'GET':
-        return Response(data)
-
-
 class WeeklySubmissions(APIView, MyPaginationMixin):
     # Get list of dicts that have week number and submission status
     
@@ -213,7 +158,7 @@ class WeeklySubmissions(APIView, MyPaginationMixin):
             weeks.append(x)
 
         # find out which weeks have submitted forms
-        resets = Itemreset.objects.all()
+        resets = Itemreset.objects.filter(user=self.request.user)
 
         weeks_submitted = []
         for i in resets:
