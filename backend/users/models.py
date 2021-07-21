@@ -86,3 +86,14 @@ class Profile(models.Model):
     phone = models.CharField(max_length=100, blank=True)
     profile_picture = models.ImageField(_("Image"), upload_to=upload_to, default='profile_pictures/default.jpg', blank=True)
     joined_on = models.DateTimeField(auto_now_add=True)
+
+    #IAM
+    satx_acute = 'satx_acute'
+    satx_dc = 'satx_dc'
+    resolute = 'resolute'
+    IAM_CHOICES = [ 
+        (satx_acute, 'satx_acute'),
+        (satx_dc, 'satx_dc'),
+        (resolute, 'resolute'),
+    ]
+    iam = models.CharField(max_length=50, choices=IAM_CHOICES, default=satx_acute, blank=True)
