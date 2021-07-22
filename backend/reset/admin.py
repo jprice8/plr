@@ -8,7 +8,7 @@ class ParAdmin(admin.ModelAdmin):
 
 
 class ItemresetAdmin(admin.ModelAdmin):
-    list_display = ('par', 'user', 'reset_level', 'send_back_confirmed', 'week', 'year', 'last_updated')
+    list_display = ('id', 'par', 'user', 'reset_level', 'send_back_confirmed', 'week', 'year', 'last_updated')
 
 admin.site.register(Par, ParAdmin)
 admin.site.register(Itemreset, ItemresetAdmin)
