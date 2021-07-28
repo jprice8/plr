@@ -23,6 +23,7 @@ class UserSerializer(serializers.ModelSerializer):
     facility_code = serializers.CharField(max_length=4, allow_blank=True, source="profile.facility_code")
     title = serializers.CharField(max_length=100, allow_blank=True, source="profile.title")
     phone = serializers.CharField(max_length=100, allow_blank=True, source="profile.phone")
+    iam = serializers.CharField(max_length=50, allow_blank=True, source="profile.iam")
     profile_picture = serializers.ImageField(required=False, source="profile.profile_picture")
     joined_on = serializers.DateTimeField(required=False, source="profile.joined_on")
     profile_id = serializers.IntegerField(required=False, source="profile.id")
@@ -30,7 +31,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
         optional_fields = ['profile_picture', 'joined_on', 'profile_id']
-        fields = ('id', 'email', 'password', 'first_name', 'last_name', 'facility_code', 'title', 'phone', 'profile_picture', 'joined_on', 'profile_id')
+        fields = ('id', 'email', 'password', 'first_name', 'last_name', 'facility_code', 'title', 'phone', 'iam', 'profile_picture', 'joined_on', 'profile_id')
 
     def create(self, validated_data):
         """

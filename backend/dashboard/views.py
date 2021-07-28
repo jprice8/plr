@@ -3,8 +3,7 @@ import datetime
 import enum
 from django.db.models import query
 from django.shortcuts import render
-from rest_framework import status, generics
-from rest_framework import serializers
+from rest_framework import status, generics, serializers, filters
 from rest_framework.renderers import JSONRenderer
 from rest_framework.serializers import Serializer
 from rest_framework.views import APIView
@@ -17,7 +16,7 @@ from drf_renderer_xlsx.renderers import XLSXRenderer
 from reset.models import Par, Itemreset
 
 from .serializers import StatItemresetDetailSerializer, StatItemresetSerializer
-from .pagination import LargeResultsSetPagination
+from .pagination import LargeResultsSetPagination, SmallResultsSetPagination
 
 class DashboardStats(APIView):
     """
@@ -137,6 +136,7 @@ class DashboardStatsList(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Itemreset.objects.all()
     serializer_class = StatItemresetSerializer
+    pagination_class = SmallResultsSetPagination
 
     def list(self, request):
         # Get list of itemresets that have a lower reset level than their 
@@ -153,6 +153,15 @@ class DashboardStatsList(generics.ListAPIView):
         ).filter(
             pk__in=reduction_resets
         )
+
+        week = request.query_params.get('week')
+        if week is not None:
+            queryset = queryset.filter(week=week)
+
+        year = request.query_params.get('year')
+        if year is not None:
+            queryset = queryset.filter(year=year)
+
         serializer = StatItemresetSerializer(queryset, many=True)
         return Response(serializer.data)
 
