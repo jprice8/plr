@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
 from reset.models import Itemreset
-from shipments.serializers import ShipmentsSerializer
+from shipments.serializers import ShipmentsSerializer, ShipmentsDetailSerializer
 
 class ShipmentsList(generics.ListAPIView):
     """
@@ -30,3 +30,13 @@ class ShipmentsList(generics.ListAPIView):
 
         serializer = ShipmentsSerializer(queryset, many=True)
         return Response(serializer.data)
+
+
+class ShipmentsDetail(generics.RetrieveAPIView):
+    """
+    Retrieve a specific itemreset to view it's information as
+    well as it's related par information.
+    """
+    permission_classes = [IsAuthenticated]
+    queryset = Itemreset.objects.all()
+    serializer_class = ShipmentsDetailSerializer
