@@ -11,4 +11,7 @@ urlpatterns = [
     # Flag urls
     path('flag/', views.FlagList.as_view(), name='flag_list'),
     path('flag/<int:pk>/', views.FlagDetail.as_view(), name='flag_detail'),
+
+    # Message urls
+    path('message/', views.MessageList.as_view(), name='message_list'),
 ]

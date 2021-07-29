@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from reset.models import Itemreset
-from shipments.models import Flag
+from shipments.models import Flag, Message
 
 
 class FlagSerializer(serializers.ModelSerializer):
@@ -12,6 +12,37 @@ class FlagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Flag
         fields = '__all__'
+
+
+class PostMessageSerializer(serializers.ModelSerializer):
+    """
+    Serializer for itemreset messages. These messages are between warehouse and
+    acute directors. Messages will be pulled up by their itemreset.
+    """
+    class Meta:
+        model = Message
+        fields = '__all__'
+
+
+class ReadMessageSerializer(serializers.ModelSerializer):
+    """
+    Serializer for reading messages nested in shipments.
+    """
+    sender_profile_picture = serializers.ImageField(source="sender.profile.profile_picture")
+    sender_first_name = serializers.CharField(source="sender.profile.first_name")
+    sender_last_name = serializers.CharField(source="sender.profile.last_name")
+    class Meta:
+        model = Message
+        fields = (
+            'reset',
+            'sender',
+            'receiver',
+            'msg_content',
+            'created_at',
+            'sender_profile_picture',
+            'sender_first_name',
+            'sender_last_name',
+        )
 
 
 class ShipmentsSerializer(serializers.ModelSerializer):
@@ -27,6 +58,8 @@ class ShipmentsSerializer(serializers.ModelSerializer):
 
     warehouse_send_back_qty_luom = serializers.SerializerMethodField()
     warehouse_send_back_qty_puom = serializers.SerializerMethodField()
+
+    flags = FlagSerializer(read_only=True)
 
     class Meta:
         model = Itemreset
@@ -44,6 +77,7 @@ class ShipmentsSerializer(serializers.ModelSerializer):
             'uom',
             'warehouse_send_back_qty_luom',
             'warehouse_send_back_qty_puom',
+            'flags'
         )
 
     def get_warehouse_send_back_qty_luom(self, obj):
@@ -75,6 +109,7 @@ class ShipmentsDetailSerializer(serializers.ModelSerializer):
     current_par_qty = serializers.IntegerField(source="par.current_par_qty")
     uom = serializers.CharField(source="par.uom")
     uom_conv_factor = serializers.CharField(source="par.uom_conv_factor")
+    sender_id = serializers.IntegerField(source="user.id")
     sender_first_name = serializers.CharField(source="user.profile.first_name")
     sender_last_name = serializers.CharField(source="user.profile.last_name")
     sender_facility_code = serializers.CharField(source="user.profile.facility_code")
@@ -83,6 +118,7 @@ class ShipmentsDetailSerializer(serializers.ModelSerializer):
     warehouse_send_back_qty_puom = serializers.SerializerMethodField()
 
     flags = FlagSerializer(read_only=True)
+    reset_message = ReadMessageSerializer(read_only=True, many=True)
 
     class Meta:
         model = Itemreset
@@ -104,12 +140,14 @@ class ShipmentsDetailSerializer(serializers.ModelSerializer):
             'current_par_qty',
             'uom',
             'uom_conv_factor',
+            'sender_id',
             'sender_first_name',
             'sender_last_name',
             'sender_facility_code',
             'warehouse_send_back_qty_luom',
             'warehouse_send_back_qty_puom',
-            'flags'
+            'flags',
+            'reset_message'
         )
 
     def get_warehouse_send_back_qty_luom(self, obj):
