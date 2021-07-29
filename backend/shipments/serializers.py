@@ -1,6 +1,17 @@
 from rest_framework import serializers
 
 from reset.models import Itemreset
+from shipments.models import Flag
+
+
+class FlagSerializer(serializers.ModelSerializer):
+    """
+    Serializer for itemreset flag. The flag object represents a problem with
+    the itemreset. To be used by the warehouse.
+    """
+    class Meta:
+        model = Flag
+        fields = '__all__'
 
 
 class ShipmentsSerializer(serializers.ModelSerializer):
@@ -71,6 +82,8 @@ class ShipmentsDetailSerializer(serializers.ModelSerializer):
     warehouse_send_back_qty_luom = serializers.SerializerMethodField()
     warehouse_send_back_qty_puom = serializers.SerializerMethodField()
 
+    flags = FlagSerializer(read_only=True)
+
     class Meta:
         model = Itemreset
         fields = (
@@ -96,6 +109,7 @@ class ShipmentsDetailSerializer(serializers.ModelSerializer):
             'sender_facility_code',
             'warehouse_send_back_qty_luom',
             'warehouse_send_back_qty_puom',
+            'flags'
         )
 
     def get_warehouse_send_back_qty_luom(self, obj):
@@ -111,3 +125,5 @@ class ShipmentsDetailSerializer(serializers.ModelSerializer):
         warehouse in purchase unit of measure.
         """
         return (obj.par.current_par_qty - obj.reset_level) / obj.par.uom_conv_factor
+
+
