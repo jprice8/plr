@@ -1,5 +1,6 @@
 from django.http.response import Http404
 from django.utils import timezone
+from django.contrib.admin.utils import flatten
 
 from rest_framework import generics, status
 from rest_framework.serializers import Serializer
@@ -19,29 +20,30 @@ from shipments.serializers import ShippingExportSerializer
 from dashboard.pagination import LargeResultsSetPagination
 
 
-class ShipmentsList(generics.ListAPIView):
+class ShipmentsList(APIView):
     """
-    Shipments list goes here.
+    Return a list of itemresets that have been shipped.
+    Flatten lists of reset ids in shipping instances and
+    filter resets for only included in flattened list.
     """
     permission_classes = [IsAuthenticated]
-    queryset = Itemreset.objects.all()
-    serializer_class = ShipmentsSerializer
 
-    def list(self, request):
-        # Get list of itemresets from around the system that have
-        # a lower reset level than their par's current ROP level
-        reduction_resets = []
-        for i in self.get_queryset():
-            if i.is_reset_lower_than_current():
-                reduction_resets.append(i.id)
+    def get(self, request, format=None):
+        # Get all reset IDs that have been shipped
+        nested_list = []
+        shipping = Shipping.objects.all()
+        for i in shipping:
+            nested_list.append(i.reset_ids)
 
-        queryset = self.get_queryset().filter(
-            send_back_confirmed=True
-        ).filter(
-            pk__in=reduction_resets
+        # Flatten list of reset ids into one list
+        shipped_reset_ids = [reset_id for sublist in nested_list for reset_id in sublist]
+
+        # Filter only resets that appear in the flattened id list
+        itemresets = Itemreset.objects.filter(
+            pk__in=shipped_reset_ids
         )
 
-        serializer = ShipmentsSerializer(queryset, many=True)
+        serializer = ShipmentsSerializer(itemresets, many=True)
         return Response(serializer.data)
 
 
@@ -67,15 +69,16 @@ class ShipmentsExport(XLSXFileMixin, ReadOnlyModelViewSet):
     filename = 'par_resets.xlsx'
 
     def list(self, request):
-        reduction_resets = []
-        for i in self.get_queryset():
-            if i.is_reset_lower_than_current():
-                reduction_resets.append(i.id)
+        nested_list = []
+        shipping = Shipping.objects.all()
+        for i in shipping:
+            nested_list.append(i.reset_ids)
+
+        # Flatten list of reset ids into one list
+        shipped_reset_ids = [reset_id for sublist in nested_list for reset_id in sublist]
 
         queryset = self.get_queryset().filter(
-            send_back_confirmed=True
-        ).filter(
-            pk__in=reduction_resets
+            pk__in=shipped_reset_ids
         )
         serializer = ShipmentsDetailSerializer(queryset, many=True)
         return Response(serializer.data)
@@ -180,6 +183,32 @@ class ShippingList(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ShippingDetail(APIView):
+    """
+    Retrieve or update a specific shipping instance.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self, pk):
+        try:
+            return Shipping.objects.get(pk=pk)
+        except Shipping.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        shipping = self.get_object(pk)
+        serializer = PostShippingSerializer(shipping)
+        return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        shipping = self.get_object(pk)
+        serializer = PostShippingSerializer(shipping, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
 
 
 class ConfirmationList(generics.ListAPIView):

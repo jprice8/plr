@@ -24,6 +24,7 @@ urlpatterns = [
     path('checkShip/', views.CheckForShipping.as_view(), name='check_shipping'),
     path('confirm/', views.ConfirmationList.as_view(), name='confirmation_list'),
     path('confirm/create/', views.ShippingList.as_view(), name='shipping_list'),
+    path('confirm/update/<int:pk>/', views.ShippingDetail.as_view(), name='shipping_detail'),
 
     # Incoming urls
     path('incoming/', views.IncomingList.as_view(), name='incoming_list'),

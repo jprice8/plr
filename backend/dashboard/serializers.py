@@ -2,6 +2,7 @@
 from rest_framework import serializers
 
 from reset.models import Itemreset
+from shipments.serializers import FlagSerializer, ReadMessageSerializer
 
 
 class StatItemresetSerializer(serializers.ModelSerializer):
@@ -13,9 +14,20 @@ class StatItemresetSerializer(serializers.ModelSerializer):
     description = serializers.CharField(source="par.description")
     mfr = serializers.CharField(source="par.mfr")
 
+    flags = FlagSerializer(read_only=True)
+
     class Meta:
         model = Itemreset
-        fields = ('id', 'par', 'description', 'mfr', 'reduction_ext', 'week', 'year')
+        fields = (
+            'id', 
+            'par', 
+            'description', 
+            'mfr', 
+            'reduction_ext', 
+            'week', 
+            'year',
+            'flags'
+        )
 
 
 class StatItemresetDetailSerializer(serializers.ModelSerializer):
@@ -51,6 +63,13 @@ class StatItemresetDetailSerializer(serializers.ModelSerializer):
     warehouse_send_back_qty_luom = serializers.SerializerMethodField()
     warehouse_send_back_qty_puom = serializers.SerializerMethodField()
 
+    flags = FlagSerializer(read_only=True)
+    reset_message = ReadMessageSerializer(read_only=True, many=True)
+    sender_id = serializers.IntegerField(source="user.id")
+    sender_first_name = serializers.CharField(source="user.profile.first_name")
+    sender_last_name = serializers.CharField(source="user.profile.last_name")
+    sender_facility_code = serializers.CharField(source="user.profile.facility_code")
+
     class Meta:
         model = Itemreset
         fields = (
@@ -84,6 +103,12 @@ class StatItemresetDetailSerializer(serializers.ModelSerializer):
             'mfr_cat',
             'warehouse_send_back_qty_luom',
             'warehouse_send_back_qty_puom',
+            'flags',
+            'reset_message',
+            'sender_id',
+            'sender_first_name',
+            'sender_last_name',
+            'sender_facility_code',
         )
 
     def get_warehouse_send_back_qty_luom(self, obj):
