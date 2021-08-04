@@ -42,12 +42,12 @@ class ParList(APIView):
         # Get only Pars related to the user's facility
         user_profile = Profile.objects.get(user=request.user)
 
-            # today = datetime.datetime.today()
+        # today = datetime.datetime.today()
         today = timezone.now()
         # current week number e.g. 17 for last week of April
         current_week_number = int(today.strftime('%W'))
 
-        # Return the top three results to the user
+        # Return the top five results to the user
         pars = Par.objects.filter(
             facility_code=user_profile.facility_code
         ).exclude(
@@ -55,13 +55,6 @@ class ParList(APIView):
         )[:5]
         serializer = ParSerializer(pars, many=True)
         return Response(serializer.data)
-
-    # def post(self, request, format=None):
-    #     serializer = ParSerializer(data=request.data)
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET', 'PUT', 'DELETE'])

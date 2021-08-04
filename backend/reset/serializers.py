@@ -9,7 +9,15 @@ class ItemresetSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Itemreset
-        fields = ('id', 'par', 'user', 'reset_level', 'send_back_confirmed', 'last_updated', 'week')
+        fields = (
+            'id', 
+            'par', 
+            'user', 
+            'reset_level', 
+            'send_back_confirmed', 
+            'last_updated', 
+            'week',
+        )
 
 
 class ParSerializer(serializers.ModelSerializer):
