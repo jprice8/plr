@@ -10,8 +10,6 @@ urlpatterns = [
 
     # Export urls
     path('export/', views.ShipmentsExport.as_view({'get': 'list'}), name='export'),
-    path('shipping/export/', views.ShippingExport.as_view({'get': 'list'}), name='shipping_export'),
-    path('incoming/export/<int:pk>/', views.IncomingExport.as_view({'get': 'list'}), name='incoming_export'),
 
     # Flag urls
     path('flag/', views.FlagList.as_view(), name='flag_list'),
@@ -20,13 +18,6 @@ urlpatterns = [
     # Message urls
     path('message/', views.MessageList.as_view(), name='message_list'),
 
-    # Confirmation urls
-    path('checkShip/', views.CheckForShipping.as_view(), name='check_shipping'),
-    path('confirm/', views.ConfirmationList.as_view(), name='confirmation_list'),
-    path('confirm/create/', views.ShippingList.as_view(), name='shipping_list'),
-    path('confirm/update/<int:pk>/', views.ShippingDetail.as_view(), name='shipping_detail'),
-
-    # Incoming urls
-    path('incoming/', views.IncomingList.as_view(), name='incoming_list'),
-    path('incoming/<int:pk>/', views.IncomingResetList.as_view(), name='incoming_reset_list'),
+    # Timeline urls
+    path('timeline/<int:pk>/', views.Timeline.as_view(), name='timeline'),
 ]

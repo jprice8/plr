@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'reset',
     'dashboard',
     'shipments',
+    'incoming',
 
     # Third party libs
     'rest_framework',

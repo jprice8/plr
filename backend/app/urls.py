@@ -15,6 +15,8 @@ urlpatterns = [
     path('api/dashboard/', include('dashboard.urls')),
     # shipments
     path('api/shipments/', include('shipments.urls')),
+    # incoming
+    path('api/incoming/', include('incoming.urls')),
     # forgot password
     re_path(r'^api/password_reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
 ]
