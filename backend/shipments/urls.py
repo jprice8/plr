@@ -17,6 +17,7 @@ urlpatterns = [
 
     # Message urls
     path('message/', views.MessageList.as_view(), name='message_list'),
+    path('message/<int:pk>/', views.MessageDetail.as_view(), name='message_detail'),
 
     # Timeline urls
     path('timeline/<int:pk>/', views.Timeline.as_view(), name='timeline'),

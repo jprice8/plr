@@ -11,7 +11,7 @@ urlpatterns = [
 
     # Export urls
     path('export/', views.IncomingExport.as_view({'get': 'list'}), name='incoming_export'),
-    #TODO: Dangling export on shipping detail for resets
+    path('export/<int:pk>/', views.IncomingResetExport.as_view({'get': 'list'}), name='incoming_reset_export'),
     path('shipping/export/', views.ShippingExport.as_view({'get': 'list'}), name='shipping_export'),
 
     # Confirmation urls

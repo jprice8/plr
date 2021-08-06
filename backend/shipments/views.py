@@ -11,7 +11,7 @@ from drf_renderer_xlsx.renderers import XLSXRenderer
 from shipments.models import Flag 
 from shipments.serializers import ShipmentsSerializer, ShipmentsDetailSerializer 
 from shipments.serializers import FlagSerializer, PostMessageSerializer, TimelineSerializer
-from shipments.models import Shipping
+from shipments.models import Shipping, Message
 from reset.models import Itemreset
 from dashboard.pagination import LargeResultsSetPagination
 
@@ -138,6 +138,24 @@ class MessageList(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class MessageDetail(APIView):
+    """
+    Delete a message with this endpoint.
+    """
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self, pk):
+        try:
+            return Message.objects.get(pk=pk)
+        except Message.DoesNotExist:
+            raise Http404
+
+    def delete(self, request, pk, format=None):
+        message = self.get_object(pk)
+        message.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class Timeline(APIView):

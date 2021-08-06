@@ -181,6 +181,29 @@ class IncomingExport(XLSXFileMixin, ReadOnlyModelViewSet):
         return Response(serializer.data)
 
 
+class IncomingResetExport(XLSXFileMixin, ReadOnlyModelViewSet):
+    """
+    Export the items shipped for a particular shipping instance.
+    """
+    permission_classes = [IsAuthenticated]
+    queryset = Itemreset.objects.all()
+    serializer_class = ShipmentsSerializer
+    renderer_classes = [XLSXRenderer]
+    filename = 'par_resets_shipped_to_warehouse.xlsx'
+
+    def list(self, request, pk):
+        try:
+            shipping = Shipping.objects.get(pk=pk)
+        except Shipping.DoesNotExist:
+            raise Http404
+
+        queryset = self.get_queryset().filter(
+            pk__in=shipping.reset_ids
+        )
+        serializer = ShipmentsDetailSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+
 class ShippingExport(XLSXFileMixin, ReadOnlyModelViewSet):
     """
     Export out the shipping history.
