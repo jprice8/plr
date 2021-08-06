@@ -15,15 +15,15 @@ services:
     depends_on:
       - db
 
-  # frontend:
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #     - ./frontend/:/frontend/
-  #   ports:
-  #     - 3000:3000
-  #   container_name: react_container
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend/:/frontend/
+    ports:
+      - 3000:3000
+    container_name: react_updated
   
   db:
     image: postgres:13-alpine
