@@ -27,5 +27,6 @@ class UserAdmin(DjangoUserAdmin):
 
 class ProfileAdmin(admin.ModelAdmin):
     list_display = ('facility_code', 'first_name', 'last_name', 'title', 'phone', 'profile_picture', 'joined_on')
+    search_fields = ('facility_code',)
 
 admin.site.register(Profile, ProfileAdmin)

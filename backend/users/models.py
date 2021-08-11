@@ -91,9 +91,11 @@ class Profile(models.Model):
     satx_acute = 'satx_acute'
     satx_dc = 'satx_dc'
     resolute = 'resolute'
+    west_acute = 'west_acute'
     IAM_CHOICES = [ 
         (satx_acute, 'satx_acute'),
         (satx_dc, 'satx_dc'),
         (resolute, 'resolute'),
+        (west_acute, 'west_acute'),
     ]
     iam = models.CharField(max_length=50, choices=IAM_CHOICES, default=satx_acute, blank=True)

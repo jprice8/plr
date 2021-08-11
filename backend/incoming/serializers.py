@@ -54,6 +54,7 @@ class ConfirmationListSerializer(serializers.ModelSerializer):
     """
     facility_code = serializers.CharField(source="par.facility_code")
     description = serializers.CharField(source="par.description")
+    imms = serializers.CharField(source="par.imms")
     mfr = serializers.CharField(source="par.mfr")
     location_name = serializers.CharField(source="par.location_name")
 
@@ -71,6 +72,7 @@ class ConfirmationListSerializer(serializers.ModelSerializer):
 
             'facility_code',
             'description',
+            'imms',
             'mfr',
             'location_name',
 
