@@ -1,0 +1,10 @@
+apiVersion: v1
+data:
+  DATABASE_ENGINE: django.db.backends.postgresql
+  DATABASE_HOST: "127.0.0.1" 
+  DATABASE_PORT: "5432"
+  DEBUG: "0"
+  DJANGO_ALLOWED_HOSTS: localhost 0.0.0.0 127.0.0.1 [::1]
+kind: ConfigMap
+metadata:
+  name: backend--env
