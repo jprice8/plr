@@ -2,8 +2,8 @@ import {
   createSlice,
   createAsyncThunk,
 } from "@reduxjs/toolkit"
-import axios from "axios"
-import { defaults } from '../constants/config'
+
+import api from "../utils/api"
 
 const initialState = {
   status: "idle",
@@ -30,9 +30,9 @@ export const requestLogin = createAsyncThunk(
       username: username,
       password: password,
     }
-    const response = await axios({
+    const response = await api({
       method: "POST",
-      url: `${defaults.baseURL}/api/users/token/`,
+      url: `/api/users/token/`,
       data: formData,
     })
     // Set token in localstorage
@@ -52,9 +52,9 @@ export const fetchUserFromToken = createAsyncThunk(
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     }
-    const response = await axios({
+    const response = await api({
       method: "GET",
-      url: `${defaults.baseURL}/api/users/me/`,
+      url: `/api/users/me/`,
       headers,
     })
     return response.data
@@ -96,9 +96,9 @@ export const updateUser = createAsyncThunk(
         console.log('Form field not given')
     }
 
-    const response = await axios({
+    const response = await api({
       method: "PUT",
-      url: `${defaults.baseURL}/api/users/${profileId}/profile/`,
+      url: `/api/users/${profileId}/profile/`,
       data: formData,
       headers
     })

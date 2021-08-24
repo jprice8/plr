@@ -3,6 +3,8 @@ import axios from "axios"
 import { DocumentDownloadIcon } from "@heroicons/react/outline"
 import toast from "react-hot-toast"
 
+import api from "../../shared/utils/api"
+
 import Loader from "../../shared/components/Loader"
 import { getFacilityName } from "../../shared/utils/getFacilityName"
 import { checkIfFlagged } from "../../shared/utils/table"
@@ -19,15 +21,14 @@ const Overview = () => {
 
   useEffect(() => {
     setLoading(true)
-
     const token = localStorage.getItem("access_token")
     const headers = {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     }
-    axios({
+    api({
       method: "get",
-      url: "http://0.0.0.0:8000/api/shipments/",
+      url: "/api/shipments/",
       headers,
     })
       .then((response) => {
@@ -62,8 +63,8 @@ const Overview = () => {
     const headers = {
       Authorization: `Bearer ${localStorage.getItem("access_token")}`,
     }
-    axios({
-      url: "http://0.0.0.0:8000/api/shipments/export/",
+    api({
+      url: "/api/shipments/export/",
       method: "GET",
       responseType: "blob",
       headers,

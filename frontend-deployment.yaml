@@ -3,28 +3,19 @@ kind: Deployment
 metadata:
   labels:
     app: frontend
-  name: frontend
+  name: frontend-deployment
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: frontend
+  replicas: 2
   template:
     metadata:
       labels:
         app: frontend
     spec:
       containers:
-      - image: gcr.io/testplr/frontend
-        name: react-updated
+      - image: gcr.io/testplr/frontend:1.0.2
+        name: frontend
         ports:
-          - containerPort: 3000
-        volumeMounts:
-          - mountPath: /frontend/
-            name: frontend
-        args:
-          - "yarn start"
-    volumes:
-      - name: frontend
-        hostPath:
-          path: /frontend/
+        - containerPort: 80

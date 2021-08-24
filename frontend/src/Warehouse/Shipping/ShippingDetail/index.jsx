@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react"
-import axios from "axios"
 import { useParams } from "react-router-dom"
 import { DocumentDownloadIcon } from "@heroicons/react/outline"
 import toast from "react-hot-toast"
+
+import api from "../../../shared/utils/api"
 
 import { getFacilityName } from "../../../shared/utils/getFacilityName"
 import { getCleanedMfr } from "../../../shared/utils/getCleanedMfr"
@@ -26,9 +27,9 @@ const ShippingDetail = () => {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     }
-    axios({
+    api({
       method: "GET",
-      url: `http://0.0.0.0:8000/api/incoming/${shippingId}/`,
+      url: `/api/incoming/${shippingId}/`,
       headers,
     })
       .then((response) => {
@@ -63,8 +64,8 @@ const ShippingDetail = () => {
     const headers = {
       Authorization: `Bearer ${localStorage.getItem("access_token")}`,
     }
-    axios({
-      url: `http://0.0.0.0:8000/api/incoming/export/${shippingId}`,
+    api({
+      url: `/api/incoming/export/${shippingId}`,
       method: "GET",
       responseType: "blob",
       headers,

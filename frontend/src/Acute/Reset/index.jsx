@@ -7,8 +7,9 @@ import {
   ExclamationCircleIcon,
   XCircleIcon,
 } from "@heroicons/react/solid"
-import axios from "axios"
 import { Link } from "react-router-dom"
+
+import api from "../../shared/utils/api"
 
 import ResetBanner from "./ResetBanner"
 import ResetFooter from "./ResetFooter"
@@ -17,7 +18,7 @@ import { getTimePhase } from "../../shared/utils/dateTime"
 const Reset = () => {
   const [data, setData] = useState({})
   const [weeksUrl, setWeeksUrl] = useState(
-    "http://0.0.0.0:8000/api/reset/weeks/"
+    "/api/reset/weeks/"
   )
   const [currentPageNumber, setCurrentPageNumber] = useState(1)
   const phase = getTimePhase()
@@ -30,7 +31,7 @@ const Reset = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         }
-        const result = await axios({
+        const result = await api({
           method: "GET",
           url: weeksUrl,
           headers,
@@ -50,7 +51,7 @@ const Reset = () => {
 
   const numberedLinkHandler = (e, i) => {
     e.preventDefault()
-    setWeeksUrl(`http://0.0.0.0:8000/api/reset/weeks/?page=${i}`)
+    setWeeksUrl(`/api/reset/weeks/?page=${i}`)
     setCurrentPageNumber(i)
   }
 
@@ -152,10 +153,8 @@ const Reset = () => {
         <>
           <ResetBanner currentMonth={week} currentYear={year} />
           <div className="max-w-5xl mx-auto">
-            {/* Weeks Array for Submission Form */}
             <div className="bg-white shadow overflow-hidden sm:rounded-md mt-20">
               <ul className="divide-y divide-gray-200">
-                {/* {loading ? <div>Loading</div> : newFormLinks} */}
                 {newFormLinks}
               </ul>
               <ResetFooter

@@ -2,7 +2,8 @@ import React, { useState } from "react"
 import { useHistory } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
-import axios from "axios"
+
+import api from "../../shared/utils/api"
 
 import Loader from "../../shared/components/Loader"
 
@@ -18,9 +19,9 @@ export const ResetPasswordEmailForm = () => {
       const formData = {
         email: data.email,
       }
-      await axios({
+      await api({
         method: "POST",
-        url: "http://0.0.0.0:8000/api/password_reset/",
+        url: "/api/password_reset/",
         data: formData,
       })
       toast.success("Reset Link Sent!")

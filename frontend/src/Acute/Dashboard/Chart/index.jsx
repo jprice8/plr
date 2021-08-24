@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react"
 import axios from "axios"
 import { Line } from "react-chartjs-2"
 
+import api from "../../../shared/utils/api"
+
 const Chart = () => {
   const [data, setData] = useState([])
 
@@ -13,9 +15,9 @@ const Chart = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         }
-        const result = await axios({
+        const result = await api({
           method: "GET",
-          url: "http://0.0.0.0:8000/api/dashboard/chart/",
+          url: "/api/dashboard/chart/",
           headers,
         })
         setData(result.data)

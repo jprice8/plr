@@ -77,7 +77,8 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
     context = {
         'current_user': reset_password_token.user,
         'email': reset_password_token.user.email,
-        'frontend_url': 'http://0.0.0.0:3000/resetPassword/confirm/{}'.format(reset_password_token.key),
+        #TODO: Change the hostname and port to the new domain name
+        'frontend_url': 'http://parlevelreset.com/resetPassword/confirm/{}'.format(reset_password_token.key),
         'reset_password_url': '{}?token={}'.format(
             instance.request.build_absolute_uri(reverse('password_reset:reset-password-confirm')),
             reset_password_token.key

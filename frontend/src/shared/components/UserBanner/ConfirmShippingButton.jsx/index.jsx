@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react"
 import { useSelector } from "react-redux"
-import { getTimePhase } from "../../../utils/dateTime"
-
-import { PencilIcon } from "@heroicons/react/outline"
-import axios from "axios"
 import { useHistory } from "react-router-dom"
+import { PencilIcon } from "@heroicons/react/outline"
+
+import api from "../../../utils/api"
+
+import { getTimePhase } from "../../../utils/dateTime"
 
 const ConfirmShippingButton = () => {
   const [shippingId, setShippingId] = useState(0)
@@ -25,9 +26,9 @@ const ConfirmShippingButton = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           }
-          const result = await axios({
+          const result = await api({
             method: "GET",
-            url: `http://0.0.0.0:8000/api/incoming/checkShip/`,
+            url: `/api/incoming/checkShip/`,
             headers: headers,
           })
           setShippingId(result.data.id)

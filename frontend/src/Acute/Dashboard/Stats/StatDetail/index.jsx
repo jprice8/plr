@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react"
-import axios from "axios"
 import { useSelector } from "react-redux"
 import { useParams } from "react-router-dom"
 import toast from "react-hot-toast"
+
+import api from "../../../../shared/utils/api"
 
 import Messages from "../../../../shared/components/Messages"
 import Timeline from "../../../../shared/components/Timeline"
@@ -49,9 +50,9 @@ const StatDetail = () => {
       Authorization: `Bearer ${token}`,
     }
 
-    axios({
+    api({
       method: "DELETE",
-      url: `http://0.0.0.0:8000/api/shipments/message/${msgIdx}`,
+      url: `/api/shipments/message/${msgIdx}`,
       headers,
     })
       .then((response) => {
@@ -75,9 +76,9 @@ const StatDetail = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         }
-        const result = await axios({
+        const result = await api({
           method: "GET",
-          url: `http://0.0.0.0:8000/api/dashboard/stats/resets/${resetNo}`,
+          url: `/api/dashboard/stats/resets/${resetNo}`,
           headers,
         })
         setData(result.data)
@@ -93,7 +94,6 @@ const StatDetail = () => {
     e.preventDefault()
     setLoadingMessage(true)
     try {
-      const messageUrl = `http://0.0.0.0:8000/api/shipments/message/`
       const token = localStorage.getItem("access_token")
       const headers = {
         "Content-Type": "application/json",
@@ -105,9 +105,9 @@ const StatDetail = () => {
         receiver: getReceiverId(),
         msg_content: msgContent,
       }
-      await axios({
+      await api({
         method: "POST",
-        url: messageUrl,
+        url: `/api/shipments/message/`,
         data: formData,
         headers,
       })

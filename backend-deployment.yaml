@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: backend
+  name: backend-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: gcr.io/testplr/backend:1.0.1
+        env:
+          - name: DEBUG
+            value: "1"
+          - name: SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: django
+                key: secretkey
+          - name: SENDGRID_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: sendgrid
+                key: apikey
+          - name: DATABASE_ENGINE
+            value: "django.db.backends.postgresql"
+          - name: DATABASE_HOST
+            value: "127.0.0.1"
+          - name: DATABASE_PORT 
+            value: "5432"
+          - name: DATABASE_NAME
+            valueFrom:
+              secretKeyRef:
+                name: cloudsql
+                key: database
+          - name: DATABASE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: cloudsql
+                key: password
+          - name: DATABASE_USER
+            valueFrom:
+              secretKeyRef:
+                name: cloudsql
+                key: username
+        ports:
+          - containerPort: 8000  
+
+      - name: cloud-sql-proxy
+        image: gcr.io/cloudsql-docker/gce-proxy:latest
+        command:
+          - "/cloud_sql_proxy"
+          - "-instances=testplr:us-central1:parlevelreset=tcp:5432"
+          - "-credential_file=/secrets/credentials"
+        securityContext:
+          runAsNonRoot: true
+        volumeMounts:
+        - name: secret-volume
+          mountPath: /secrets/
+          readOnly: true
+        - name: cloudsql
+          mountPath: /cloudsql
+
+      volumes:
+      - name: secret-volume
+        secret:
+          secretName: sql-proxy-creds
+      - name: cloudsql
+        emptyDir: {}

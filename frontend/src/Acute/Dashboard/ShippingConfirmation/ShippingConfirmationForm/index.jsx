@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react"
 import { useHistory, useParams } from "react-router-dom"
 import toast from "react-hot-toast"
-import axios from "axios"
 import { useSelector } from "react-redux"
+
+import api from "../../../../shared/utils/api"
 
 import Loader from "../../../../shared/components/Loader"
 import ParBadge from "./ParBadge"
@@ -26,9 +27,9 @@ const ShippingConfirmationForm = ({isSubmit}) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         }
-        const result = await axios({
+        const result = await api({
           method: "GET",
-          url: "http://0.0.0.0:8000/api/incoming/confirm/",
+          url: "/api/incoming/confirm/",
           headers: headers,
         })
         setPars(result.data)
@@ -63,9 +64,9 @@ const ShippingConfirmationForm = ({isSubmit}) => {
           sender: user.id,
           tracking_number: confNumber,
         }
-        await axios({
+        await api({
           method: "POST",
-          url: `http://0.0.0.0:8000/api/incoming/confirm/create/`,
+          url: `/api/incoming/confirm/create/`,
           data: formData,
           headers,
         })
@@ -92,9 +93,9 @@ const ShippingConfirmationForm = ({isSubmit}) => {
         const formData = {
           tracking_number: confNumber,
         }
-        await axios({
+        await api({
           method: "PUT",
-          url: `http://0.0.0.0:8000/api/incoming/confirm/update/${shippingId}/`,
+          url: `/api/incoming/confirm/update/${shippingId}/`,
           data: formData,
           headers,
         })

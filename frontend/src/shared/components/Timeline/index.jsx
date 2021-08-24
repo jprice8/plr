@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react"
-import axios from "axios"
 import { useParams } from "react-router-dom"
 import { formatDistance } from "date-fns"
 import { CheckIcon, TruckIcon, ExclamationIcon } from "@heroicons/react/solid"
+
+import api from "../../utils/api"
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ")
@@ -20,9 +21,9 @@ const Timeline = ({ loadingFlag }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         }
-        const result = await axios({
+        const result = await api({
           method: "GET",
-          url: `http://0.0.0.0:8000/api/shipments/timeline/${resetNo}/`,
+          url: `/api/shipments/timeline/${resetNo}/`,
           headers,
         })
         setTimeline(result.data)

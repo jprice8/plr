@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react"
-import axios from "axios"
 import toast from "react-hot-toast"
 import { DocumentDownloadIcon } from "@heroicons/react/outline"
+
+import api from "../../shared/utils/api"
 
 import Table from "../../shared/components/Table"
 import TextBanner from "../../shared/components/TextBanner"
@@ -23,9 +24,9 @@ const Shipping = () => {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     }
-    axios({
+    api({
       method: "GET",
-      url: `http://0.0.0.0:8000/api/incoming/`,
+      url: `/api/incoming/`,
       headers,
     })
       .then((response) => {
@@ -54,8 +55,8 @@ const Shipping = () => {
     const headers = {
       Authorization: `Bearer ${localStorage.getItem("access_token")}`,
     }
-    axios({
-      url: "http://0.0.0.0:8000/api/incoming/shipping/export/",
+    api({
+      url: "/api/incoming/shipping/export/",
       method: "GET",
       responseType: "blob",
       headers,

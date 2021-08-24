@@ -4,6 +4,8 @@ import { useSelector } from "react-redux"
 import { useParams } from "react-router-dom"
 import toast from "react-hot-toast"
 
+import api from "../../shared/utils/api"
+
 import Messages from "../../shared/components/Messages"
 import Timeline from "../../shared/components/Timeline"
 import Loader from "../../shared/components/Loader"
@@ -13,10 +15,6 @@ import { getCleanedMfr } from "../../shared/utils/getCleanedMfr"
 import { getFacilityName } from "../../shared/utils/getFacilityName"
 import { getFormattedDate } from "../../shared/utils/dateTime"
 
-
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ")
-}
 
 const ResetDetail = () => {
   const [shipment, setShipment] = useState([])
@@ -37,7 +35,7 @@ const ResetDetail = () => {
   useEffect(() => {
     setLoading(true)
     const ajaxRequest = axios.CancelToken.source()
-    const shipmentsUrl = `http://0.0.0.0:8000/api/shipments/${resetNo}/`
+    const shipmentsUrl = `/api/shipments/${resetNo}/`
 
     const fetchShipmentData = async () => {
       try {
@@ -46,7 +44,7 @@ const ResetDetail = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         }
-        const response = await axios.get(shipmentsUrl, {
+        const response = await api.get(shipmentsUrl, {
           cancelToken: ajaxRequest.token,
           headers: headers,
         })
@@ -69,13 +67,13 @@ const ResetDetail = () => {
     if (isFlagged) {
       setLoadingFlag(true)
       try {
-        const flagUrl = `http://0.0.0.0:8000/api/shipments/flag/${shipment.flags.id}/`
+        const flagUrl = `/api/shipments/flag/${shipment.flags.id}/`
         const token = localStorage.getItem("access_token")
         const headers = {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         }
-        await axios({
+        await api({
           method: "DELETE",
           url: flagUrl,
           headers,
@@ -90,7 +88,7 @@ const ResetDetail = () => {
     } else {
       setLoadingFlag(true)
       try {
-        const flagUrl = `http://0.0.0.0:8000/api/shipments/flag/`
+        const flagUrl = `/api/shipments/flag/`
         const token = localStorage.getItem("access_token")
         const headers = {
           "Content-Type": "application/json",
@@ -100,7 +98,7 @@ const ResetDetail = () => {
           reset: resetNo,
           user: user.id,
         }
-        await axios({
+        await api({
           method: "POST",
           url: flagUrl,
           data: formData,
@@ -127,9 +125,9 @@ const ResetDetail = () => {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     }
-    axios({
+    api({
       method: "DELETE",
-      url: `http://0.0.0.0:8000/api/shipments/message/${msgIdx}/`,
+      url: `/api/shipments/message/${msgIdx}/`,
       headers,
     })
       .then((result) => {
@@ -149,7 +147,7 @@ const ResetDetail = () => {
     e.preventDefault()
     setLoadingMessage(true)
     try {
-      const messageUrl = `http://0.0.0.0:8000/api/shipments/message/`
+      const messageUrl = `/api/shipments/message/`
       const token = localStorage.getItem("access_token")
       const headers = {
         "Content-Type": "application/json",
@@ -161,7 +159,7 @@ const ResetDetail = () => {
         receiver: shipment.sender_id,
         msg_content: msgContent,
       }
-      await axios({
+      await api({
         method: "POST",
         url: messageUrl,
         data: formData,

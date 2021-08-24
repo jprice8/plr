@@ -23,6 +23,7 @@ export const getCleanedMfr = (mfr) => {
   const fresenius = new RegExp("^FRESENIUS*", "i")
   const ge = new RegExp("^GE MEDICAL*", "i")
   const greiner = new RegExp("^GREINER*", "i")
+  const halyard = new RegExp("*HALYARD*", "i")
   const hologic = new RegExp("^HOLOGIC*", "i")
   const icumed = new RegExp("^ICU MEDICAL*", "i")
   const intuitive = new RegExp("^INTUITIVE*", "i")
@@ -57,6 +58,8 @@ export const getCleanedMfr = (mfr) => {
     return "arthrex"
   } else if (baxter.test(mfr)) {
     return "baxter"
+  } else if (becton.test(mfr)) {
+    return "bd"
   } else if (bostonscientific.test(mfr)) {
     return "bostonscientific"
   } else if (bard.test(mfr)) {
@@ -79,16 +82,16 @@ export const getCleanedMfr = (mfr) => {
     return "fresenius"
   } else if (ge.test(mfr)) {
     return "generalelectric"
+  } else if (greiner.test(mfr)) {
+    return "gbo"
+  } else if (halyard.test(mfr)) {
+    return "halyardhealth"
   } else if (lsl.test(mfr)) {
     return "tenethealth"
   } else if (medline.test(mfr)) {
     return "medline"
   } else if (rd.test(mfr)) {
     return "rdplastics"
-  } else if (becton.test(mfr)) {
-    return "bd"
-  } else if (greiner.test(mfr)) {
-    return "gbo"
   } else if (deroyal.test(mfr)) {
     return "deroyal"
   } else if (avanos.test(mfr)) {

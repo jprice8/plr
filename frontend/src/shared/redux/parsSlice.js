@@ -3,8 +3,8 @@ import {
   createEntityAdapter,
   createAsyncThunk,
 } from "@reduxjs/toolkit"
-import axios from "axios"
-import { defaults } from '../constants/config'
+
+import api from "../utils/api"
 
 const parsAdapter = createEntityAdapter()
 const initialState = parsAdapter.getInitialState({
@@ -18,9 +18,9 @@ export const fetchPars = createAsyncThunk("pars/fetchPars", async () => {
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,
   }
-  const response = await axios({
+  const response = await api({
     method: "GET",
-    url: `${defaults.baseURL}/api/reset/par/`,
+    url: `/api/reset/par/`,
     headers: headers,
   })
   return response.data
@@ -41,9 +41,9 @@ export const addNestedItemReset = createAsyncThunk(
       send_back_confirmed: send_back_confirmed,
       week: week,
     }
-    const response = await axios({
+    const response = await api({
       method: "POST",
-      url: `${defaults.baseURL}/api/reset/itemreset/`,
+      url: `/api/reset/itemreset/`,
       data: formData,
       headers,
     })
@@ -67,9 +67,9 @@ export const updateNestedItemReset = createAsyncThunk(
       send_back_confirmed: send_back_confirmed,
       week: week,
     }
-    const response = await axios({
+    const response = await api({
       method: "PUT",
-      url: `${defaults.baseURL}/api/reset/itemreset/${id}/`,
+      url: `/api/reset/itemreset/${id}/`,
       data: formData,
       headers,
     })

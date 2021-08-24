@@ -4,7 +4,7 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile 
+      dockerfile: Dockerfile
     volumes:
       - ./backend/:/backend/
     env_file:
@@ -14,17 +14,14 @@ services:
     depends_on:
       - db
     container_name: backend
-
+  
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
-    volumes:
-      - ./frontend/:/frontend/
+      dockerfile: Dockerfile.prod
     ports:
-      - 3000:3000
-    container_name: react_updated
-  
+      - "1337:80"
+
   db:
     image: postgres:13-alpine
     volumes:
@@ -36,4 +33,3 @@ services:
 
 volumes:
   postgres_data:
-        

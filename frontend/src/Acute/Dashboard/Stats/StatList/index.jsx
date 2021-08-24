@@ -1,7 +1,8 @@
 import React, { useState, useEffect, Fragment } from "react"
-import axios from "axios"
 import toast from "react-hot-toast"
 import { DocumentDownloadIcon } from "@heroicons/react/outline"
+
+import api from "../../../../shared/utils/api"
 
 import Loader from "../../../../shared/components/Loader"
 import Table from "../../../../shared/components/Table"
@@ -28,9 +29,9 @@ const StatList = () => {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     }
-    axios({
+    api({
       method: "GET",
-      url: `http://0.0.0.0:8000/api/dashboard/stats/resets/`,
+      url: `/api/dashboard/stats/resets/`,
       headers,
     })
       .then((response) => {
@@ -60,8 +61,8 @@ const StatList = () => {
     const headers = {
       Authorization: `Bearer ${localStorage.getItem("access_token")}`,
     }
-    axios({
-      url: "http://0.0.0.0:8000/api/dashboard/stats/resets/export/",
+    api({
+      url: "/api/dashboard/stats/resets/export/",
       method: "GET",
       responseType: "blob",
       headers,

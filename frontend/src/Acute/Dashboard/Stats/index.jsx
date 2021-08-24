@@ -1,7 +1,8 @@
 import { CashIcon, ClockIcon, TrendingDownIcon } from "@heroicons/react/outline"
-import axios from "axios"
 import React, { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
+
+import api from "../../../shared/utils/api"
 
 import Loader from "../../../shared/components/Loader"
 import { usdTwoDigits } from "../../../shared/utils/currency"
@@ -24,9 +25,9 @@ const Stats = () => {
           Authorization: `Bearer ${token}`,
         }
 
-        const result = await axios({
+        const result = await api({
           method: "GET",
-          url: "http://0.0.0.0:8000/api/dashboard/stats/",
+          url: "/api/dashboard/stats/",
           headers,
         })
         setData(result.data)
