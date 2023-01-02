@@ -6,7 +6,6 @@ import {
   ChevronLeftIcon,
   ChevronDoubleRightIcon,
   ChevronRightIcon,
-  SearchCircleIcon,
 } from "@heroicons/react/outline"
 
 import Checkbox from "../Checkbox"
@@ -74,9 +73,7 @@ const Table = ({
     gotoPage,
     nextPage,
     previousPage,
-    setPageSize,
-    selectedFlatRows,
-    state: { pageIndex, pageSize, selectedRowIds },
+    state: { pageIndex },
   } = useTable(
     {
       columns,

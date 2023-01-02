@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: parlevelreset-ingress
+  namespace: default
+spec:
+  backend:
+    serviceName: frontend-service
+    servicePort: 80
+  rules:
+  - http:
+      paths:
+      - path: /*
+        backend:
+          serviceName: backend-service
+          servicePort: 8000
+    host: api.parlevelreset.com
+  - http:
+      paths:
+      - path: /*
+        backend:
+          serviceName: frontend-service
+          servicePort: 80
+    host: parlevelreset.com
+    

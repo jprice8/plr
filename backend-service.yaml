@@ -5,9 +5,10 @@ metadata:
     app: backend
   name: backend-service
 spec:
+  type: NodePort
   ports:
-  - port: 8000
+  - protocol: TCP
     targetPort: 8000
+    port: 8000
   selector:
     app: backend
-  type: NodePort

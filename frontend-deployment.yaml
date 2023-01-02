@@ -15,7 +15,7 @@ spec:
         app: frontend
     spec:
       containers:
-      - image: gcr.io/testplr/frontend:1.0.2
+      - image: gcr.io/testplr/frontend:1.0.3
         name: frontend
         ports:
         - containerPort: 80

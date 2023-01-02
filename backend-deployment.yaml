@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: gcr.io/testplr/backend:1.0.1
+        image: gcr.io/testplr/backend:1.0.2
         env:
           - name: DEBUG
             value: "1"

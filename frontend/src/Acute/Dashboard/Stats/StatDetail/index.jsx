@@ -187,7 +187,7 @@ const StatDetail = () => {
               </div>
 
               <div className="border-t border-gray-200 py-5 divide-y divide-gray-200 px-5">
-                <div className="">
+                <div>
                   <dl className="divide-y divide-gray-200">
                     {/* Detail rows here */}
                     <RowInfo
